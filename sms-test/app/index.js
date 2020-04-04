@@ -27,5 +27,4 @@ class Button extends React.Component {
     }
 }
 
-ReactDOM.render(<Button text="PRESS" handleClick={() => { sendSMS(); }} />, document.getElementById('app'));
-
+ReactDOM.render(<Button text="PRESS" handleClick={() => { sendSMS(); }} />, document.body);
