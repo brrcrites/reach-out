@@ -17,12 +17,14 @@ function sendSMS() {
     .then(message => console.log(message.sid));
 }
 
-function Button({ text, handleClick }) {
-    return(
-        <button onClick={handleClick}>
-            {text}
-        </button>
-    );
+class Button extends React.Component {
+    render() {
+        return(
+            <button onClick={this.props.handleClick}>
+                {this.props.text}
+            </button>
+        );
+    }
 }
 
 ReactDOM.render(<Button text="PRESS" handleClick={() => { sendSMS(); }} />, document.getElementById('app'));

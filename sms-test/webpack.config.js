@@ -1,4 +1,5 @@
 var path = require('path');
+
 /*
 var HTMLWebpackPlugin = require('html-webpack-plugin');
 
@@ -22,6 +23,10 @@ module.exports = {
             }
         ]
     },
+    devServer: {
+        contentBase: './build'
+    },
+    devtool: 'inline-source-map',
     output: {
         filename: 'app.bundle.js',
         path: path.resolve(__dirname, 'build')
