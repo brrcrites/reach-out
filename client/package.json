@@ -1,5 +1,5 @@
 {
-  "name": "sms-test",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -9,14 +9,16 @@
     "react-scripts": "3.4.1"
   },
   "devDependencies": {
-    "babel-preset-react": "^6.24.1",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "babel-loader": "^8.1.0",
     "html-webpack-plugin": "^4.0.4",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "rm -rf ./build && webpack",
     "start": "webpack-dev-server --host 0.0.0.0"
   }
 }

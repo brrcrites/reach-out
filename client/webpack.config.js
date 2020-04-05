@@ -22,7 +22,8 @@ module.exports = {
         ]
     },
     devServer: {
-        contentBase: './build'
+        contentBase: './build',
+        port: 8080
     },
     devtool: 'inline-source-map',
     output: {
