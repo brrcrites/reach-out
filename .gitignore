@@ -1,4 +1,4 @@
-# sms-test project
-sms-test/build/
-sms-test/node_modules/
-sms-test/package-lock.json
+# client project
+client/build/
+client/node_modules/
+client/package-lock.json
