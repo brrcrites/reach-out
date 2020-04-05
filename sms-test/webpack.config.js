@@ -2,13 +2,11 @@ var path = require('path');
 
 var HTMLWebpackPlugin = require('html-webpack-plugin');
 
-/*
 var HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
     template: './app/index.html',
     filename: 'index.html',
     inject: 'body'
 });
-*/
 
 module.exports = {
     mode: 'development',
@@ -31,5 +29,5 @@ module.exports = {
         filename: 'app.bundle.js',
         path: path.resolve(__dirname, 'build')
     },
-    plugins: [new HTMLWebpackPlugin()]
+    plugins: [HTMLWebpackPluginConfig]
 };
