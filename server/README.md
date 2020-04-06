@@ -1,6 +1,8 @@
 ## Env Variables
 
+```
 PORT=8081 # Recommended
-TWILIO_ACCOUNT_SID=<from twilio>
-TWILIO_AUTH_TOKEN=<from twilio>
-TWILIO_SMS_NUMBER=<from twilio>
+TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXX # From Twilio
+TWILIO_AUTH_TOKEN=XXXXXXXXXXXXX # From Twilio
+TWILIO_SMS_NUMBER=+1234567890 # From Twilio
+```
