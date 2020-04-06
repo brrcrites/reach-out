@@ -1,5 +1,6 @@
 const path = require('path');
-const nodeExternals = require('webpack-node-externals')
+const nodeExternals = require('webpack-node-externals');
+const dotEnv = require('dotenv-webpack');
 
 module.exports = {
     mode: 'development',
@@ -24,4 +25,7 @@ module.exports = {
         filename: 'app.bundle.js',
         path: path.resolve(__dirname, 'build')
     },
+    plugins: [
+        new dotEnv()
+    ]
 };

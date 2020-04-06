@@ -1,11 +1,13 @@
-import path from 'path'
-import express from 'express'
+import express from 'express';
+import cors from 'cors';
 
 const app = express();
-const DIST_DIR = __dirname;
-const HTML_FILE = path.join(DIST_DIR, 'index.html');
 
-app.use(express.static(DIST_DIR));
+app.use(cors());
+
+app.post('/send-sms', function(req, res, next) {
+    res.send('POST request to /send-sms')
+});
 
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
