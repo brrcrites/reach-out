@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 // Axios configuration for backend server is defined here
 import client from './client.js';
 
-function sendSMS(toNumber, message) {
+function sendSMS(toNumber, message, setResponse) {
     console.log(`to number: ${toNumber}`);
     console.log(`message: ${message}`)
 
@@ -16,43 +16,50 @@ function sendSMS(toNumber, message) {
    console.log(`payload data: ${data}`)
 
    // Post the request to have the sms sent
-   client.post('/send-sms', data, { headers: { 'Content-Type': 'application/json' } } )
+   client.post('/send-sms', data, { headers: { 'Content-Type': 'application/json' } })
    // Handle success case
-   .then(function(response) {
+   .then( (response) => {
        console.log(response);
+       setResponse(response.data);
    })
    // Handle failure case
-   .catch(function(response) {
-       console.log(response);
+   .catch( (response) => {
+       console.error(response);
    });
 }
 
 function InputForm() {
     const [toNumber, setToNumber] = useState('+1');
     const [message, setMessage] = useState('This is a default test message');
+    const [response, setResponse] = useState('No Message');
 
     return (
-        <form onSubmit={ () => {sendSMS(toNumber, message)} }>
-            <label>
-                Send Message To:
-                <input 
-                    type="text" 
-                    value={toNumber} 
-                    onChange={ e => setToNumber(e.target.value) }
-                />
-            </label>
-            <br />
-            <label>
-                Message:
-                <input
-                    type="text"
-                    value={message}
-                    onChange={ e => setMessage(e.target.value) } 
-                />
-            </label>
-            <br />
-            <input type="submit" value="Submit" />
-        </form>
+        <div>
+            <form onSubmit={ (event) => { event.preventDefault(); sendSMS(toNumber, message, setResponse)} }>
+                <label>
+                    Send Message To:
+                    <input 
+                        type="text" 
+                        value={toNumber} 
+                        onChange={ e => setToNumber(e.target.value) }
+                    />
+                </label>
+                <br />
+                <label>
+                    Message:
+                    <input
+                        type="text"
+                        value={message}
+                        onChange={ e => setMessage(e.target.value) } 
+                    />
+                </label>
+                <br />
+                <input type="submit" value="Submit" />
+            </form>
+            <div>
+                { response }
+            </div>
+        </div>
     );
 }
 

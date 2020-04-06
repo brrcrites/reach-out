@@ -30,7 +30,7 @@ To run the development server
 npm run start
 ```
 
-> Note: for now you need to go to `localhost:8080/build` to get to the project
+> Note: If you are testing how this works with a backend server locally you will need to use `ngrok` to route internet traffic to the server and set that in the client.js file, otherwise you will get an CORS error
 
 ## Docker Execution
 
