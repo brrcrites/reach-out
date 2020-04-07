@@ -19,8 +19,24 @@ services:
             dockerfile: Dockerfile
             args:
                 PORT: 8081
+                MONGOPORT: 27017
         image: myapp-server-img
         container_name: myapp_server
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
         ports:
             - "8081:8081"
+        depends_on:
+            - mongo
+        env_file: server/.env
+        environment:
+            - MONGO_HOSTNAME=$MONGO_HOSTNAME
+            - MONGO_PORT=$MONGO_PORT
+            - MONGO_DB=$MONGO_DB
 
+    mongo:
+        image: mongo
+        container_name: myapp-mongodb
+        ports:
+            - "27017:27017"
