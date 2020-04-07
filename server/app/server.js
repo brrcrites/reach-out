@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser'
 import cors from 'cors';
 import twilio from 'twilio';
-import Message from './app/models/message.js';
+import './models/message.js';
 
 // Make sure we have the .env values we need before booting the server
 if(!process.env.TWILIO_SMS_NUMBER) {
