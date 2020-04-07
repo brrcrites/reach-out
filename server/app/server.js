@@ -44,8 +44,7 @@ app.post('/send-sms', function(req, res, next) {
                     console.error(error);res.send('ERROR - Message sent but DB save failed'); 
                 });
         }
-    )
-    .catch(
+    ) .catch(
         (error) => {
             console.error(error);
             res.send('ERROR - POST request to /send-sms');
