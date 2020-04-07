@@ -11,7 +11,7 @@ var HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
 module.exports = {
     mode: 'development',
     node: { global: true, fs: 'empty' },
-    entry: './app/index.js',
+    entry: './app/app.js',
     module: {
         rules: [
             {
@@ -27,7 +27,7 @@ module.exports = {
     },
     devtool: 'inline-source-map',
     output: {
-        filename: 'app.bundle.js',
+        filename: 'client.bundle.js',
         path: path.resolve(__dirname, 'build')
     },
     plugins: [HTMLWebpackPluginConfig]
