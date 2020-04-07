@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - 11
+
+jobs:
+  include:
+  - name: "Client Build Test"
+    script: npm run build --prefix client
+
+  - name: "Server Build Test"
+    script: npm run build --prefix server
