@@ -1,0 +1,26 @@
+version: '2.2'
+
+services:
+    webapp-client:
+        build:
+            context: client
+            dockerfile: Dockerfile
+            args:
+                PORT: 8080
+        image: myapp-client-img
+        container_name: myapp_client
+        ports:
+            - "8080:8080"
+        depends_on:
+            - webapp-server
+    webapp-server:
+        build:
+            context: server
+            dockerfile: Dockerfile
+            args:
+                PORT: 8081
+        image: myapp-server-img
+        container_name: myapp_server
+        ports:
+            - "8081:8081"
+
