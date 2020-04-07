@@ -11,32 +11,39 @@ services:
         container_name: myapp_client
         ports:
             - "8080:8080"
+        volumes:
+            - ./client/:/usr/app
+            - /usr/app/node_modules
         depends_on:
             - webapp-server
     webapp-server:
         build:
             context: server
             dockerfile: Dockerfile
-            args:
-                PORT: 8081
-                MONGOPORT: 27017
         image: myapp-server-img
         container_name: myapp_server
         volumes:
-            - .:/usr/src/app
-            - /usr/src/app/node_modules
+            - ./server/:/usr/app
+            - /usr/app/node_modules
         ports:
             - "8081:8081"
         depends_on:
             - mongo
         env_file: server/.env
-        environment:
-            - MONGO_HOSTNAME=$MONGO_HOSTNAME
-            - MONGO_PORT=$MONGO_PORT
-            - MONGO_DB=$MONGO_DB
-
+        networks:
+            - app-network
     mongo:
         image: mongo
         container_name: myapp-mongodb
+        volumes:
+            - data-volume:/data/db
+        networks:
+            - app-network
         ports:
             - "27017:27017"
+volumes:
+    data-volume:
+    node_modules:
+networks:
+    app-network:
+        driver: bridge

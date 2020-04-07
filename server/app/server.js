@@ -1,9 +1,11 @@
+const dotenv = require('dotenv').config();
 import express from 'express';
 import bodyParser from 'body-parser'
 import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
 import moment from 'moment';
+import db from './src/database.js';
 
 // Make sure we have the .env values we need before booting the server
 if(!process.env.TWILIO_SMS_NUMBER) {
@@ -35,7 +37,7 @@ app.post('/send-sms', function(req, res, next) {
                 toPhoneNumber: req.body.toNumber,
                 fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
                 message: req.body.message,
-                time: moment(req.body.time,'MM-DD-YYYY hh:mma')
+                time: moment()
             });
             message.save().then(() => { res.send('SUCCESS - POST request to /send-sms'); })
                 .catch((error) => { 

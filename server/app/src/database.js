@@ -1,7 +1,6 @@
 'use strict';
 
 const mongoose = require('mongoose')
-const dotenv = require('dotenv');
 
 // Mongoose options
 const options = {
@@ -18,7 +17,7 @@ const options = {
 const {
     MONGO_HOSTNAME,
     MONGO_DB,
-    MONTO_PORT
+    MONGO_PORT
 } = process.env;
 
 const dbConnectionURL = {
