@@ -30,5 +30,5 @@ module.exports = {
         filename: 'client.bundle.js',
         path: path.resolve(__dirname, 'build')
     },
-    plugins: [HTMLWebpackPluginConfig]
+    plugins: [ HTMLWebpackPluginConfig ]
 };
