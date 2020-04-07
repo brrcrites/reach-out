@@ -5,7 +5,7 @@ node_js:
 jobs:
   include:
   - name: "Client Build Test"
-    script: npm run build --prefix client
+    script: npm install --prefix client && npm run build --prefix client
 
   - name: "Server Build Test"
-    script: npm run build --prefix server
+    script: npm install --prefix server && npm run build --prefix server
