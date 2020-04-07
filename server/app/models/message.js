@@ -1,8 +1,4 @@
-'use strict';
-
-const mongoose = require('mongoose');
-const moment = require('moment');
-const Twilio = require('twilio');
+import mongoose from 'mongoose';
 
 const MessageSchema = new mongoose.Schema({
     toPhoneNumber: String,
@@ -13,5 +9,5 @@ const MessageSchema = new mongoose.Schema({
 });
 
 const Message = mongoose.model('message',MessageSchema);
-module.exports = Message;
 
+export default Message;
