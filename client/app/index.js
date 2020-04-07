@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
+import { BrowserRouter, Route, Switch, NavLink } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 
 // Axios configuration for backend server is defined here
@@ -28,7 +29,7 @@ function sendSMS(toNumber, message, setResponse) {
    });
 }
 
-function InputForm() {
+const InputForm = () => {
     const [toNumber, setToNumber] = useState('+1');
     const [message, setMessage] = useState('This is a default test message');
     const [response, setResponse] = useState('No Message');
@@ -63,4 +64,48 @@ function InputForm() {
     );
 }
 
-ReactDOM.render(<InputForm />, document.getElementById('app'));
+const Admin = () => {
+    return(
+        <div>
+            <p>This is the Admin Panel</p>
+        </div>
+    )
+}
+
+const Error = () => {
+    return(
+        <div>
+            <p>Error: Page does not exist!</p>
+        </div>
+    )
+}
+
+const Navigation = () => {
+    return(
+        <div>
+            <ul>
+                <li><NavLink to='/'>Home</NavLink></li>
+                <li><NavLink to='/admin'>Admin Panel</NavLink></li>
+            </ul>
+        </div>
+    );
+}
+
+class App extends Component {
+    render() {
+        return(
+            <BrowserRouter>
+            <div>
+                <Navigation />
+                <Switch>
+                    <Route path='/' component={InputForm} exact />
+                    <Route path='/admin' component={Admin} />
+                    <Route component={Error} />
+                </Switch>
+            </div>
+            </BrowserRouter>
+        );
+    }
+}
+
+ReactDOM.render(<App />, document.getElementById('app'));
