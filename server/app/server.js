@@ -1,4 +1,3 @@
-const dotenv = require('dotenv').config();
 import express from 'express';
 import bodyParser from 'body-parser'
 import cors from 'cors';
@@ -8,6 +7,7 @@ import moment from 'moment';
 import db from './src/database.js';
 
 // Make sure we have the .env values we need before booting the server
+// The .emv file is pulled in automatically by the dotenv-webpack package
 if(!process.env.TWILIO_SMS_NUMBER) {
     throw('Missing TWILIO_SMS_NUMBER in .env file');
 }
@@ -19,7 +19,9 @@ if(!process.env.TWILIO_AUTH_TOKEN) {
 }
 
 const app = express();
+// TODO: This allows CORS requests to the server and was necessary for local dev, can we remove it when using docker?
 app.use(cors());
+// Allows JSON payloads in the body of requests
 app.use(bodyParser.json());
 
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -50,6 +52,26 @@ app.post('/send-sms', function(req, res, next) {
             res.send('ERROR - POST request to /send-sms');
         }
     )
+});
+
+function sanitizeMessage(message) {
+    return {
+        'toPhoneNumber': message.toPhoneNumber,
+        'fromPhoneNumber': message.fromPhoneNumber,
+        'message': message.message,
+        'time': message.time
+    }
+}
+
+app.get('/message-history', function(req, res, next) {
+    Message.find({}, function(err, result) {
+        if(err) {
+            res.send(err);
+        } else {
+            // Sanitize the message before returning it
+            res.json(result.map( (item) => { return sanitizeMessage(item); }));
+        }
+    });
 });
 
 const PORT = process.env.PORT || 8080
