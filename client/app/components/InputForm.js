@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
 
 // Axios configuration for backend server is defined here
-import client from './client.js';
+import client from '../client.js';
 
 function sendSMS(toNumber, message, setResponse) {
     console.log(`to number: ${toNumber}`);
@@ -28,7 +27,7 @@ function sendSMS(toNumber, message, setResponse) {
    });
 }
 
-function InputForm() {
+const InputForm = () => {
     const [toNumber, setToNumber] = useState('+1');
     const [message, setMessage] = useState('This is a default test message');
     const [response, setResponse] = useState('No Message');
@@ -63,4 +62,4 @@ function InputForm() {
     );
 }
 
-ReactDOM.render(<InputForm />, document.getElementById('app'));
+export default InputForm;
