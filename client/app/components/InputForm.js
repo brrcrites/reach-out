@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // Axios configuration for backend server is defined here
 import client from '../client.js';
 
-function sendSMS(toNumber, message, setResponse) {
+function sendSms(toNumber, message, setResponse) {
     console.log(`to number: ${toNumber}`);
     console.log(`message: ${message}`)
 
@@ -34,7 +34,7 @@ const InputForm = () => {
 
     return (
         <div>
-            <form onSubmit={ (event) => { event.preventDefault(); sendSMS(toNumber, message, setResponse)} }>
+            <form onSubmit={ (event) => { event.preventDefault(); sendSms(toNumber, message, setResponse)} }>
                 <label>
                     Send Message To:
                     <input 
