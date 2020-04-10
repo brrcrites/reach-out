@@ -18,14 +18,6 @@ class RecurringJobSystem {
         uuid = null
     }) {
         // All null values will have the system run every 1 min
-        console.log(`second: ${second}`);
-        console.log(`minute: ${minute}`);
-        console.log(`hour: ${hour}`);
-        console.log(`date: ${date}`);
-        console.log(`month: ${month}`);
-        console.log(`year: ${year}`);
-        console.log(`dayOfWeek: ${dayOfWeek}`);
-
         var rule = new schedule.RecurrenceRule();
         if (second !== null) {
             rule.second = second;
@@ -38,15 +30,23 @@ class RecurringJobSystem {
         rule.month = month;
         rule.year = year;
         rule.dayOfWeek = dayOfWeek;
+        console.log(`Rule: ${JSON.stringify(rule)}`);
 
+        // Allowing the user to pass in an optional uuid for the future case
+        // where we need to reboot the server and want it to be bootstrapped
+        // from the mongo db and carry the old uuids for book keeping
         const jobUUID = (uuid === null) ? uuidv4() : uuid;
         this.jobCache.set(jobUUID, job)
-        console.log(`Caching job with uuid ${jobUUID}`);
+        console.log(`${jobUUID} -- job cached`);
 
-        console.log(`Rule: ${JSON.stringify(rule)}`);
         var job = schedule.scheduleJob(rule, () => {
+            // We will want to replace this with a twilio sms function here
+            // or let users pass in a function
             console.log(`[${new Date()}] ${message}`);
         })
+        console.log(`${jobUUID} -- job registered`)
+
+        return jobUUID;
     }
 
     deleteJob(jobUUID) {
@@ -54,7 +54,7 @@ class RecurringJobSystem {
             this.jobCache.get(jobUUID).cancel();
             return true;
         } 
-        console.error(`Job UUID ${jobUUID} does not match a registerd job`);
+        console.error(`${jobUUID} -- job not found`);
         return false;
     }
 }
