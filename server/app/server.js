@@ -4,7 +4,7 @@ import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
 import moment from 'moment';
-import db from './src/database.js';
+import RecurringJobSystem from './RecurringJob';
 
 // Make sure we have the .env values we need before booting the server
 // The .emv file is pulled in automatically by the dotenv-webpack package
@@ -78,6 +78,11 @@ const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
     console.log(`App listening to ${PORT}....`)
     console.log('Press Ctrl+C to quit.')
+
+    var jobSystem = new RecurringJobSystem();
+    jobSystem.createJob({
+        message: 'ths is a test message'
+    });
 })
 
 
