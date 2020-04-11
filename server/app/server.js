@@ -4,6 +4,7 @@ import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
 import moment from 'moment';
+import RecurringJobSystem from './RecurringJob';
 
 // Make sure we have the .env values we need before booting the server
 // The .emv file is pulled in automatically by the dotenv-webpack package
@@ -17,40 +18,48 @@ if(!process.env.TWILIO_AUTH_TOKEN) {
     throw('Missing TWILIO_AUTH_TOKEN in .env file');
 }
 
+// Create express application server for serving the routes
 const app = express();
-// TODO: This allows CORS requests to the server and was necessary for local dev, can we remove it when using docker?
-app.use(cors());
-// Allows JSON payloads in the body of requests
-app.use(bodyParser.json());
+app.use(cors()); // TODO: This allows CORS requests to the server and was necessary for local dev, can we remove it when using docker?
+app.use(bodyParser.json()); // Allows JSON payloads in the body of requests
 
+// Initialize twilio client so we can send messages
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
+// Initialize job system for working with recurring tasks
+const jobSystem = new RecurringJobSystem();
+
+// TODO: For now I'm just sending the error messages through to the frontend to aid in debugging, but we should probably
+// update these to sanitize the messages in the future
 app.post('/send-sms', function(req, res, next) {
-    console.log(`body: ${JSON.stringify(req.body)}`);
+    console.log(`/send-sms body: ${JSON.stringify(req.body)}`);
+    // Send SMS
     client.messages.create({
         body: req.body.message,
         from: process.env.TWILIO_SMS_NUMBER,
         to: req.body.toNumber
     })
-    .then(
-        () => { 
-            const message = new Message({
-                toPhoneNumber: req.body.toNumber,
-                fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
-                message: req.body.message,
-                time: moment()
-            });
-            message.save().then(() => { res.send('SUCCESS - POST request to /send-sms'); })
-                .catch((error) => { 
-                    console.error(error);res.send('ERROR - Message sent but DB save failed'); 
-                });
-        }
-    ) .catch(
-        (error) => {
+    .then(() => { 
+        // Log message in db
+        const message = new Message({
+            toPhoneNumber: req.body.toNumber,
+            fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
+            message: req.body.message,
+            time: moment()
+        });
+        message.save()
+        .then(() => { 
+            res.sendStatus(200);
+        })
+        .catch((error) => { 
             console.error(error);
-            res.send('ERROR - POST request to /send-sms');
-        }
-    )
+            res.status(500).send(error); 
+        });
+    }) 
+    .catch((error) => {
+        console.error(error);
+        res.status(500).send(error);
+    });
 });
 
 function sanitizeMessage(message) {
@@ -71,6 +80,23 @@ app.get('/message-history', function(req, res, next) {
             res.json(result.map( (item) => { return sanitizeMessage(item); }));
         }
     });
+});
+
+app.post('/recurring-create', function(req, res, next) {
+    console.log(`/recurring-create body: ${JSON.stringify(req.body)}`);
+    const jobUUID = jobSystem.createJob({
+        message: req.body.message
+    });
+    console.log(`${jobUUID} -- successfully created using /recurring-create endpoint`)
+    res.sendStatus(200);
+});
+
+app.post('/recurring-delete', function(req, res, next) {
+    console.log(`/recurring-delete body: ${JSON.stringify(req.body)}`);
+    if (jobSystem.deleteJob(req.body.uuid)) {
+        res.sendStatus(200);
+    }
+    res.sendStatus(406); // Not Acceptable?
 });
 
 const PORT = process.env.PORT || 8080
