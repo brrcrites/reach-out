@@ -14,4 +14,12 @@ jobs:
     script: npm install --prefix server && npm run build --prefix server
 
   - name: "Docker Compose Teset"
+    before_install:
+      - echo "PORT=8081" > server/.env
+      - echo "TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" >> server/.env
+      - echo "TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" >> server/.env
+      - echo "TWILIO_SMS_NUMBER=+12345678901" >> server/.env
+      - echo "MONGO_HOSTNAME=mongo" >> server/.env
+      - echo "MONGO_DB=myapp_db" >> server/.env
+      - echo "MONGO_PORT=27017" >> server/.env
     script: docker-compose build
