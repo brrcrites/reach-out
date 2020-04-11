@@ -4,7 +4,6 @@ import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
 import moment from 'moment';
-import db from './src/database.js';
 
 // Make sure we have the .env values we need before booting the server
 // The .emv file is pulled in automatically by the dotenv-webpack package
