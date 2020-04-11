@@ -9,3 +9,6 @@ jobs:
 
   - name: "Server Build Test"
     script: npm install --prefix server && npm run build --prefix server
+
+  - name: "Docker Compose Teset"
+    script: docker-compose build
