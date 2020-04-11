@@ -13,7 +13,7 @@ jobs:
   - name: "Server Build Test"
     script: npm install --prefix server && npm run build --prefix server
 
-  - name: "Docker Compose Teset"
+  - name: "Docker Compose Test"
     before_install:
       - echo "PORT=8081" > server/.env
       - echo "TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" >> server/.env
