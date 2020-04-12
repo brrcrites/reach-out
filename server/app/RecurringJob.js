@@ -5,6 +5,11 @@ class RecurringJobSystem {
     constructor() {
         this.jobCache = new Map();
     }
+
+    getIds() {
+        // Spread operator to convert the keys iterator to an array
+        return [...this.jobCache.keys()];
+    }
     
     createJob({
         second = null,
