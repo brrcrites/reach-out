@@ -7,14 +7,14 @@ services:
 
 jobs:
   include:
-  - name: "Client Build Test(s)"
+  - name: "Client Build Test"
     script: npm install --prefix client && npm run build --prefix client
 
-  - name: "Server Build Test(s)"
+  - name: "Server Build Test"
     script: npm install --prefix server && npm run build --prefix server
 
-  - name: "Server Jest Test(s)"
-    script: npm install --prefix server && npm run test -- prefix server
+  - name: "Server Jest Test"
+    script: npm install --prefix server && npm run test --prefix server
 
   - name: "Docker Compose Test"
     before_install:
