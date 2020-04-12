@@ -58,7 +58,7 @@ class RecurringJobSystem {
             // Cancel the job and remove it from the cache
             this.jobCache.get(jobUUID).cancel();
             this.jobCache.delete(jobUUID);
-            console.error(`${jobUUID} -- job found and cancelled`);
+            console.log(`${jobUUID} -- job found and cancelled`);
             return true;
         } 
 
