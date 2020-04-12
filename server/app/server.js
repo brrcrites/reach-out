@@ -26,8 +26,8 @@ app.use(bodyParser.json()); // Allows JSON payloads in the body of requests
 // Initialize twilio client so we can send messages
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-// Initialize job system for working with recurring tasks
-const jobSystem = new RecurringJobSystem();
+// Initialize job system for working with recurring tasks and save it as a local variable to the app
+app.locals.jobSystem = new RecurringJobSystem();
 
 // TODO: For now I'm just sending the error messages through to the frontend to aid in debugging, but we should probably
 // update these to sanitize the messages in the future
@@ -84,19 +84,22 @@ app.get('/message-history', function(req, res, next) {
 
 app.post('/recurring-create', function(req, res, next) {
     console.log(`/recurring-create body: ${JSON.stringify(req.body)}`);
-    const jobUUID = jobSystem.createJob({
+    const jobUUID = app.locals.jobSystem.createJob({
         message: req.body.message
     });
-    console.log(`${jobUUID} -- successfully created using /recurring-create endpoint`)
+    console.log(`${jobUUID} -- job successfully created using /recurring-create endpoint`)
     res.sendStatus(200);
 });
 
 app.post('/recurring-delete', function(req, res, next) {
     console.log(`/recurring-delete body: ${JSON.stringify(req.body)}`);
-    if (jobSystem.deleteJob(req.body.uuid)) {
+    if (app.locals.jobSystem.deleteJob(req.body.uuid)) {
+        console.log(`${req.body.uuid} -- job successfully deleted using /recurring-delete endpoint`)
         res.sendStatus(200);
+    } else {
+        console.log(`${req.body.uuid} -- job failed to delete using /recurring-delete endpoint`)
+        res.sendStatus(406); // Not Acceptable?
     }
-    res.sendStatus(406); // Not Acceptable?
 });
 
 const PORT = process.env.PORT || 8080

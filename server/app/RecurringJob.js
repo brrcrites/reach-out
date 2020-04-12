@@ -36,24 +36,32 @@ class RecurringJobSystem {
         // where we need to reboot the server and want it to be bootstrapped
         // from the mongo db and carry the old uuids for book keeping
         const jobUUID = (uuid === null) ? uuidv4() : uuid;
-        this.jobCache.set(jobUUID, job)
-        console.log(`${jobUUID} -- job cached`);
 
         var job = schedule.scheduleJob(rule, () => {
             // We will want to replace this with a twilio sms function here
             // or let users pass in a function
             console.log(`[${new Date()}] ${message}`);
         })
-        console.log(`${jobUUID} -- job registered`)
+        console.log(`${jobUUID} -- job created`)
+
+        // Cache the job so we can keep track of it
+        this.jobCache.set(jobUUID, job);
+        console.log(`${jobUUID} -- job registered`);
 
         return jobUUID;
     }
 
     deleteJob(jobUUID) {
-        if (this.jobCache.get(jobUUID) !== undefined) {
+        console.log(`${jobUUID} -- attempting to delete job`)
+
+        if (this.jobCache.has(jobUUID)) {
+            // Cancel the job and remove it from the cache
             this.jobCache.get(jobUUID).cancel();
+            this.jobCache.delete(jobUUID);
+            console.error(`${jobUUID} -- job found and cancelled`);
             return true;
         } 
+
         console.error(`${jobUUID} -- job not found`);
         return false;
     }
