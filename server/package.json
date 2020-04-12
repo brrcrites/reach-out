@@ -21,6 +21,7 @@
     "@babel/preset-env": "^7.9.0",
     "babel-jest": "^25.3.0",
     "babel-loader": "^8.1.0",
+    "regenerator-runtime": "^0.13.5",
     "cors": "^2.8.5",
     "jest": "^25.3.0",
     "webpack": "^4.42.1",
