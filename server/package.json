@@ -33,5 +33,9 @@
     "build": "rm -rf build && webpack",
     "test": "jest --silent",
     "test:logging": "jest"
+  },
+  "jest": {
+      "verbose": true,
+      "preset": "@shelf/jest-mongodb"
   }
 }
