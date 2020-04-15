@@ -7,10 +7,11 @@ const ScheduledMessageSchema = new mongoose.Schema({
         default: moment,
         get: (date) => { return moment(date); }
     },
-    toPhoneNumber: String,
-    fromPhoneNumber: String,
+    toPhoneNumber: { type: String, required: true },
+    fromPhoneNumber: { type: String, required: true},
+    scheduled_uuid: { type: String, default: "" },
     enabled: { type: Boolean, default: true },
-    message: String,
+    message: { type: String, required: true },
     recurring: {
         rules: [{
             /* All are optional, if not included => '*' */

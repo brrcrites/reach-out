@@ -13,7 +13,7 @@ const testSchedule = {toPhoneNumber: "+18675309",fromPhoneNumber: "+18001010220"
         }
     };
 
-describe.only('Message Model Test', () => {
+describe('Message Model Test', () => {
     beforeAll(async () => {
         await mongoose.connect(global.__MONGO_URI__, 
             { useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true}, (err) => {

@@ -13,7 +13,4 @@ services:
         ports:
             - "8081:8081"
         env_file: server/.env
-        command: npm run test
-networks:
-    app-network:
-        driver: bridge
+        command: npm run test:logging

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import moment from 'moment';
 import ScheduledMessage from './scheduledMessage.js';
 
 const MessageSchema = new mongoose.Schema({
@@ -7,11 +8,11 @@ const MessageSchema = new mongoose.Schema({
         ref: 'ScheduledMessage',
         default: null
     },
-    toPhoneNumber: String,
-    fromPhoneNumber: String,
-    message: String,
+    toPhoneNumber: { type: String, required: true },
+    fromPhoneNumber: { type: String, required: true },
+    message: { type: String, required: true },
     timeZone: String,
-    time: {type: Date, index: true}, // Creation time
+    time: {type: Date, index: true, default: moment }, 
 });
 
 const Message = mongoose.model('message',MessageSchema);
