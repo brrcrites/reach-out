@@ -14,7 +14,6 @@ jobs:
     script: npm install --prefix server && npm run build --prefix server
 
   - name: "Server Jest Test"
-    before_script: npm install @shelf/jest-mongodb
     script: npm install --prefix server && npm run test --prefix server
 
   - name: "Docker Compose Test"
