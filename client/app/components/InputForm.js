@@ -24,6 +24,7 @@ function sendSms(toNumber, message, setResponse) {
    // Handle failure case
    .catch( (response) => {
        console.error(response);
+       setResponse(response.data);
    });
 }
 
@@ -34,7 +35,9 @@ const InputForm = () => {
 
     return (
         <div>
-            <form onSubmit={ (event) => { event.preventDefault(); sendSms(toNumber, message, setResponse)} }>
+            <h1>Home (Test) Page</h1>
+            <h2>Send Single Text Message</h2>
+            <form onSubmit={ (event) => { event.preventDefault(); sendSms(toNumber, message, setResponse); } }>
                 <label>
                     Send Message To:
                     <input 
