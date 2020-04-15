@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
+import moment from 'moment';
 
 const ScheduledMessageSchema = new mongoose.Schema({
     created: {
         type: Date,
-        default: Date.now
+        default: moment,
+        get: (date) => { return moment(date); }
     },
     toPhoneNumber: String,
     fromPhoneNumber: String,
@@ -22,7 +24,8 @@ const ScheduledMessageSchema = new mongoose.Schema({
         }],
         end: {
             type: Date,
-            min: [Date.now,'Must be a date in the future']
+            min: [moment(),'Must be a date in the future'],
+            get: (date) => { return moment(date); }
         }
     }
 });

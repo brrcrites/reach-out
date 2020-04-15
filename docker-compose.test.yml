@@ -1,21 +1,6 @@
 version: '2.2'
 
 services:
-    webapp-client:
-        build:
-            context: client
-            dockerfile: Dockerfile
-            args:
-                PORT: 8080
-        image: myapp-client-img
-        container_name: myapp_client
-        ports:
-            - "8080:8080"
-        volumes:
-            - ./client/:/usr/app
-            - /usr/app/node_modules
-        depends_on:
-            - webapp-server
     webapp-server:
         build:
             context: server
@@ -27,23 +12,8 @@ services:
             - /usr/app/node_modules
         ports:
             - "8081:8081"
-        depends_on:
-            - mongo
         env_file: server/.env
-        networks:
-            - app-network
-    mongo:
-        image: mongo
-        container_name: myapp-mongodb
-        volumes:
-            - data-volume:/data/db
-        networks:
-            - app-network
-        ports:
-            - "27017:27017"
-volumes:
-    data-volume:
-    node_modules:
+        command: npm run test
 networks:
     app-network:
         driver: bridge

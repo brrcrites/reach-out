@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import moment from 'moment';
 import regeneratorRuntime from "regenerator-runtime";
 
 import Message from '../app/models/message.js';
@@ -22,6 +23,11 @@ describe.only('Message Model Test', () => {
                 }
             });
     });
+    afterAll(async() => {
+        await mongoose.disconnect();
+    });
+
+
 
     test('Create and save a message',async() => {
         const newMessage = new Message(testMessage);
@@ -33,11 +39,26 @@ describe.only('Message Model Test', () => {
         expect(savedMessage.message).toBe(testMessage.message);
     });
 
+    expect.extend({
+        toBeDateBetween(received,start,end) {
+            const pass = received.isBetween(start,end,null,'[]');
+            if (pass) {
+                return {
+                    message: () => `expected created time: ${received} not to be between ${start} and ${end}`,
+                    pass: true,
+                };
+            } else {
+                return {
+                    message: () => `expected created time: ${received} to be between ${start} and ${end}`,
+                    pass: false,
+                };
+            }
+    }});
+
     // Try catch ValidationError
     test('Create and save a scheduled message',async() => {
-        const current = Date.now();
-        testSchedule.created = current;
-        testSchedule.recurring.end = Date(current.getDate() + 1);
+        testSchedule.recurring.end = moment().add(1,'days');
+        const testStart = moment();
         const newScheduledMessage = new ScheduledMessage(testSchedule)
         const savedScheduledMessage = await newScheduledMessage.save();
 
@@ -46,8 +67,8 @@ describe.only('Message Model Test', () => {
         expect(savedScheduledMessage.fromPhoneNumber).toBe(testSchedule.fromPhoneNumber);
         expect(savedScheduledMessage.message).toBe(testSchedule.message);
         expect(savedScheduledMessage.enabled).toBe(true);
-        expect(savedScheduledMessage.created.getDate()).toBe(current.getDate());
-        expect(savedScheduledMessage.recurring.rules).toBe(minRule);
+        expect(savedScheduledMessage.created).toBeDateBetween(testStart,moment());
+        expect(savedScheduledMessage.recurring.end.isSame(testSchedule.recurring.end)).toBe(true);
     });
 });
 
