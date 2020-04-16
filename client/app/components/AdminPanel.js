@@ -21,8 +21,8 @@ const AdminPanel = () => {
 
     return(
         <div>
-            <h1>This is the Admin Panel</h1>
-            <h2>Message History:</h2>
+            <h1>Admin Panel Page</h1>
+            <h2>Sent Message History:</h2>
                 <ul>
                 {
                     // Check that there is some history, and then unpack each item in
@@ -33,6 +33,8 @@ const AdminPanel = () => {
                     })
                 }
                 </ul>
+            <h2>Scheduled Job List:</h2>
+            <p>TODO</p>
         </div>
     )
 }

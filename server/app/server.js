@@ -84,8 +84,18 @@ app.get('/message-history', function(req, res, next) {
 
 app.post('/recurring-create', function(req, res, next) {
     console.log(`/recurring-create body: ${JSON.stringify(req.body)}`);
+    if (!req.body?.toNumber || !req.body?.message) {
+        res.sendStatus(406);
+    }
     const jobUUID = app.locals.jobSystem.createJob({
-        message: req.body.message
+        toNumber: req.body.toNumber,
+        message: req.body.message,
+        minute: req.body?.minute,
+        hour: req.body?.hour,
+        date: req.body?.date,
+        month: req.boty?.month,
+        year: req.body?.year,
+        dayOfWeek: req.body?.dayOfWeek
     });
     console.log(`${jobUUID} -- job successfully created using /recurring-create endpoint`)
     res.sendStatus(200);
