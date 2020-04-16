@@ -23,11 +23,9 @@ const {
 const dbConnectionURL = {
     'LOCALURL': `mongodb://${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}`
 };
-mongoose.connect(dbConnectionURL.LOCALURL,options);
-const db = mongoose.connection;
-db.on('error',console.error.bind(console,'MongoDB Connection Error:'+dbConnectionURL.LOCALURL));
-db.once('open', () => {
-    // We're connected!
-    console.log('MongoDB Connection Successful');
+mongoose.connect(dbConnectionURL.LOCALURL,options).catch(e=> {
+    console.error('Connection error',e.message);
 });
+const db = mongoose.connection;
 
+module.exports = db;
