@@ -1,7 +1,6 @@
 import schedule from 'node-schedule';
-import moment from 'moment';
-import ScheduledMessage from './models/scheduledMessage';
 import { v4 as uuidv4 } from 'uuid';
+import ScheduledMessage from './models/scheduledMessage.js';
 
 class RecurringJobSystem {
     constructor() {
@@ -35,6 +34,13 @@ class RecurringJobSystem {
     getIds() {
         // Spread operator to convert the keys iterator to an array
         return [...this.jobCache.keys()];
+    }
+
+    isActive(jobUUID) {
+        return this.jobCache.has(jobUUID);
+    }
+    getJob(jobUUID) {
+        return this.jobCache.has(jobUUID)? this.jobCache.get(jobUUID): null;
     }
     
     createJob({
@@ -81,6 +87,21 @@ class RecurringJobSystem {
         // Cache the job so we can keep track of it
         this.jobCache.set(jobUUID, job);
         console.log(`${jobUUID} -- job registered`);
+        const scheduledMessage = new ScheduledMessage({
+            toPhoneNumber: toNumber,
+            message: message,
+            scheduled_uuid: jobUUID,
+            fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
+            recurring: {
+                rules: [{
+                    dayOfWeek: dayOfWeek,
+                    hour: hour,
+                    minute: minute,
+                    second: second,
+                }]
+            }
+        });
+        scheduledMessage.save((err,msg)=>{ if (err) { console.log(err); } });
 
         return jobUUID;
     }
@@ -90,6 +111,9 @@ class RecurringJobSystem {
 
         if (this.jobCache.has(jobUUID)) {
             // Cancel the job and remove it from the cache
+            ScheduledMessage.updateOne({scheduled_uuid: jobUUID},{$set:{enabled: false}},function(err,res) {
+                if (err) { console.log(err); }
+            });
             this.jobCache.get(jobUUID).cancel();
             this.jobCache.delete(jobUUID);
             console.log(`${jobUUID} -- job found and cancelled`);
