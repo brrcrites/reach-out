@@ -7,6 +7,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+    [...jobSystem.jobCache].forEach(([k,v])=>v.cancel());
     jobSystem = null;
 })
 
@@ -38,3 +39,4 @@ test('the correct created job is deleted', () => {
     expect(jobSystem.deleteJob(jobUUIDtoRemove)).toBe(true);
     expect(jobSystem.getIds()).toEqual(expect.arrayContaining([jobUUIDtoStayFirst, jobUUIDtoStaySecond]));
 });
+

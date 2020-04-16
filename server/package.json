@@ -21,7 +21,10 @@
     "@babel/preset-env": "^7.9.0",
     "babel-jest": "^25.3.0",
     "babel-loader": "^8.1.0",
+    "regenerator-runtime": "^0.13.5",
     "cors": "^2.8.5",
+    "jest-environment-node": "^25.3.0",
+    "@shelf/jest-mongodb": "^1.1.5",
     "jest": "^25.3.0",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
@@ -31,6 +34,10 @@
     "start": "node ./build/app.bundle.js",
     "build": "rm -rf build && webpack",
     "test": "jest --silent",
-    "test:logging": "jest"
+    "test:logging": "jest --coverage"
+  },
+  "jest": {
+    "verbose": true,
+    "preset": "@shelf/jest-mongodb"
   }
 }
