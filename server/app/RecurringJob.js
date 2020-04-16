@@ -1,9 +1,35 @@
 import schedule from 'node-schedule';
+import moment from 'moment';
+import ScheduledMessage from './models/scheduledMessage';
 import { v4 as uuidv4 } from 'uuid';
 
 class RecurringJobSystem {
     constructor() {
         this.jobCache = new Map();
+    }
+
+    getAll(callback) {
+        ScheduledMessage.find({}, function(err, result) {
+            if(err) {
+                console.error(error);
+                callback(error, []);
+            } else {
+                callback(null, result);
+            }
+        });
+    }
+
+    getActive(callback) {
+        // Jobs that are past their end point are not active, even if they haven't been specifically disabled
+        // TODO: Need to fill in the query syntax below to meet the above specs
+        ScheduledMessage.find({}, function(err, result) {
+            if(err) {
+                console.error(error);
+                callback(error, []);
+            } else {
+                callback(null, result);
+            }
+        });
     }
 
     getIds() {

@@ -5,6 +5,13 @@ import twilio from 'twilio';
 import Message from './models/message.js';
 import moment from 'moment';
 import RecurringJobSystem from './RecurringJob';
+import db from './src/database.js';
+
+db.on('error',console.error.bind(console,'MongoDB Connection Error:'));
+db.once('open', () => {
+    // We're connected!
+    console.log('MongoDB Connection Successful');
+});
 
 // Make sure we have the .env values we need before booting the server
 // The .emv file is pulled in automatically by the dotenv-webpack package
@@ -109,6 +116,25 @@ app.post('/recurring-delete', function(req, res, next) {
     } else {
         console.log(`${req.body.uuid} -- job failed to delete using /recurring-delete endpoint`)
         res.sendStatus(406); // Not Acceptable?
+    }
+});
+
+app.get('/recurring-list', function(req, res, next) {
+    console.log(`/recurring-list query params: ${JSON.stringify(req.query)}`);
+    // TODO: The query param here is a string not a boolean, is it worth using this npm package just to
+    // get the query params to conver to boolenas? https://www.npmjs.com/package/express-query-boolean
+    const resCallback = (error, results) => {
+        if (error) {
+            // TODO: I don't know exactly what this does so we should test that it works correctly
+            next(error);
+        } else {
+            res.json(results);
+        }
+    }
+    if (req.query?.all === 'true') {
+        app.locals.jobSystem.getAll(resCallback);
+    } else {
+        app.locals.jobSystem.getActive(resCallback);
     }
 });
 
