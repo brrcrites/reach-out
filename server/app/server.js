@@ -3,8 +3,16 @@ import bodyParser from 'body-parser'
 import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
+import ScheduledMessage from './models/scheduledMessage.js';
 import moment from 'moment';
 import RecurringJobSystem from './RecurringJob';
+import db from './src/database.js';
+
+db.on('error',console.error.bind(console,'MongoDB Connection Error:'));
+db.once('open', () => {
+    // We're connected!
+    console.log('MongoDB Connection Successful');
+});
 
 // Make sure we have the .env values we need before booting the server
 // The .emv file is pulled in automatically by the dotenv-webpack package
@@ -49,6 +57,7 @@ app.post('/send-sms', function(req, res, next) {
         });
         message.save()
         .then(() => { 
+            console.log('Saved');
             res.sendStatus(200);
         })
         .catch((error) => { 
@@ -97,6 +106,7 @@ app.post('/recurring-create', function(req, res, next) {
         year: req.body?.year,
         dayOfWeek: req.body?.dayOfWeek
     });
+
     console.log(`${jobUUID} -- job successfully created using /recurring-create endpoint`)
     res.sendStatus(200);
 });
@@ -117,5 +127,4 @@ app.listen(PORT, () => {
     console.log(`App listening to ${PORT}....`)
     console.log('Press Ctrl+C to quit.')
 })
-
 

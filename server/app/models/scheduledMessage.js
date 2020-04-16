@@ -9,13 +9,13 @@ const ScheduledMessageSchema = new mongoose.Schema({
     },
     toPhoneNumber: { type: String, required: true },
     fromPhoneNumber: { type: String, required: true},
-    scheduled_uuid: { type: String, default: "" },
+    scheduled_uuid: { type: String, default: null },
     enabled: { type: Boolean, default: true },
     message: { type: String, required: true },
     recurring: {
         rules: [{
             /* All are optional, if not included => '*' */
-            dayOfWeek: { type: Number, min: 0, max: 6  },
+            dayOfWeek: [{ type: Number, min: 0, max: 6  }],
             month: { type: Number, min: 1, max: 12 },
             dayOfMonth: { type: Number, min: 1, max: 31 },
             hour: { type: Number, min: 0, max: 23 },
