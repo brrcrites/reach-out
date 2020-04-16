@@ -87,8 +87,9 @@ class RecurringJobSystem {
 
         if (this.jobCache.has(jobUUID)) {
             // Cancel the job and remove it from the cache
-            ScheduledMessage.updateOne({scheduled_uuid: jobUUID},{$set:{enabled: false}});
-            console.log(ScheduledMessage.find({scheduled_uuid: jobUUID}));
+            ScheduledMessage.updateOne({scheduled_uuid: jobUUID},{$set:{enabled: false}},function(err,res) {
+                if (err) { console.log(err); }
+            });
             this.jobCache.get(jobUUID).cancel();
             this.jobCache.delete(jobUUID);
             console.log(`${jobUUID} -- job found and cancelled`);
