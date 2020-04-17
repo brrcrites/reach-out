@@ -7,7 +7,7 @@ const AdminPanel = () => {
     const [history, setHistory] = useState(null);
 
     const getSmsHistory = async () => {
-        const response = await client.get('/message-history')
+        const response = await client.get('/message-history');
         setHistory(response.data);
     }
 
@@ -15,9 +15,7 @@ const AdminPanel = () => {
     // whenever one of the values in the second parameter changes. Since the second
     // parameter is an empty array, it will be run exactly once when the component
     // loads
-    useEffect(() => {
-        getSmsHistory();
-    }, []);
+    useEffect(() => { getSmsHistory() }, []);
 
     return(
         <div>
