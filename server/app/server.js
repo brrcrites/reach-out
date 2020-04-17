@@ -58,16 +58,16 @@ app.post('/send-sms', function(req, res, next) {
         message.save()
         .then(() => { 
             console.log('Saved');
-            res.sendStatus(200);
+            return res.sendStatus(200);
         })
         .catch((error) => { 
             console.error(error);
-            res.status(500).send(error); 
+            return res.status(500).send(error);
         });
     }) 
     .catch((error) => {
         console.error(error);
-        res.status(500).send(error);
+        return res.status(500).send(error);
     });
 });
 
@@ -83,10 +83,10 @@ function sanitizeMessage(message) {
 app.get('/message-history', function(req, res, next) {
     Message.find({}, function(err, result) {
         if(err) {
-            res.send(err);
+            return res.send(err);
         } else {
             // Sanitize the message before returning it
-            res.json(result.map( (item) => { return sanitizeMessage(item); }));
+            return res.json(result.map( (item) => { return sanitizeMessage(item); }));
         }
     });
 });
@@ -94,7 +94,7 @@ app.get('/message-history', function(req, res, next) {
 app.post('/recurring-create', function(req, res, next) {
     console.log(`/recurring-create body: ${JSON.stringify(req.body)}`);
     if (!req.body?.toNumber || !req.body?.message) {
-        res.sendStatus(406);
+        return res.sendStatus(406);
     }
     const jobUUID = app.locals.jobSystem.createJob({
         toNumber: req.body.toNumber,
@@ -108,17 +108,36 @@ app.post('/recurring-create', function(req, res, next) {
     });
 
     console.log(`${jobUUID} -- job successfully created using /recurring-create endpoint`)
-    res.sendStatus(200);
+    return res.sendStatus(200);
 });
 
 app.post('/recurring-delete', function(req, res, next) {
     console.log(`/recurring-delete body: ${JSON.stringify(req.body)}`);
     if (app.locals.jobSystem.deleteJob(req.body.uuid)) {
         console.log(`${req.body.uuid} -- job successfully deleted using /recurring-delete endpoint`)
-        res.sendStatus(200);
+        return res.sendStatus(200);
     } else {
         console.log(`${req.body.uuid} -- job failed to delete using /recurring-delete endpoint`)
-        res.sendStatus(406); // Not Acceptable?
+        return res.sendStatus(406); // Not Acceptable?
+    }
+});
+
+app.get('/recurring-list', function(req, res, next) {
+    console.log(`/recurring-list query params: ${JSON.stringify(req.query)}`);
+    // TODO: The query param here is a string not a boolean, is it worth using this npm package just to
+    // get the query params to conver to boolenas? https://www.npmjs.com/package/express-query-boolean
+    const resCallback = (error, results) => {
+        if (error) {
+            // TODO: I don't know exactly what this does so we should test that it works correctly
+            return next(error);
+        } else {
+            return res.json(results);
+        }
+    }
+    if (req.query?.all === 'true') {
+        return app.locals.jobSystem.getAll(resCallback);
+    } else {
+        return app.locals.jobSystem.getEnabled(resCallback);
     }
 });
 

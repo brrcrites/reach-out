@@ -1,21 +1,50 @@
 import schedule from 'node-schedule';
 import { v4 as uuidv4 } from 'uuid';
 import ScheduledMessage from './models/scheduledMessage.js';
+import moment from 'moment';
 
 class RecurringJobSystem {
     constructor() {
         this.jobCache = new Map();
     }
 
-    getIds() {
+    getAll(callback) {
+        ScheduledMessage.find({}, function(err, result) {
+            if(err) {
+                console.error(error);
+                callback(error, []);
+            } else {
+                callback(null, result);
+            }
+        });
+    }
+
+    getEnabled(callback) {
+        // Jobs that are past their end point are not active, even if they haven't been specifically disabled
+        // TODO: We need to test this query syntax, and it currently only checks enabled since recurring.end is
+        // an optional field and idk how to say 'if it isn't present or is $gt now'
+        ScheduledMessage.find({ 'enabled': true }, function(err, result) {
+            if(err) {
+                console.error(error);
+                callback(error, []);
+            } else {
+                callback(null, result);
+            }
+        });
+    }
+
+    getRunning() {
         // Spread operator to convert the keys iterator to an array
         return [...this.jobCache.keys()];
     }
 
-    isActive(jobUUID) {
+    isRunning(jobUUID) {
         return this.jobCache.has(jobUUID);
     }
+
     getJob(jobUUID) {
+        // TODO: Should this look into the mongo db for the job since its by ID? perhaps getRunning with an ID
+        // returns running only and getJob return running or mongo?
         return this.jobCache.has(jobUUID)? this.jobCache.get(jobUUID): null;
     }
     

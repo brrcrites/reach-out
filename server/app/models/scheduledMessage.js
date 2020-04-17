@@ -24,6 +24,7 @@ const ScheduledMessageSchema = new mongoose.Schema({
             // Year is not included
         }],
         end: {
+            // TODO: Is this a mongo type or can we use moment directly here?
             type: Date,
             min: [moment(),'Must be a date in the future'],
             get: (date) => { return moment(date); }
