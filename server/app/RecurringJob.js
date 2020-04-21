@@ -47,14 +47,11 @@ class RecurringJobSystem {
         // returns running only and getJob return running or mongo?
         return this.jobCache.has(jobUUID)? this.jobCache.get(jobUUID): null;
     }
-    
+
     createJob({
         second = null,
         minute = null,
         hour = null,
-        date = null,
-        month = null,
-        year = null,
         dayOfWeek = null,
         message,
         toNumber,
@@ -85,25 +82,7 @@ class RecurringJobSystem {
         // TODO: Figure out how we want to handle the above failure case
         console.log(`${jobUUID} -- job saved`);
 
-        // All null values will have the system run every 1 min
-        var rule = new schedule.RecurrenceRule();
-
-        if (second !== null) { rule.second = second }
-        // Everything defaults to null except second, so we don't need
-        // to check here before setting
-        rule.minute = (minute) ? minute : null;
-        rule.hour = (hour) ? hour : null;
-        rule.date = (date) ? date : null;
-        rule.month = (month) ? month : null;
-        rule.year = (year) ? year : null;
-        rule.dayOfWeek = (dayOfWeek && dayOfWeek.length > 0) ? dayOfWeek : null;
-        console.log(`Rule: ${JSON.stringify(rule)}`);
-
-        var job = schedule.scheduleJob(rule, () => {
-            // We will want to replace this with a twilio sms function here
-            // or let users pass in a function
-            console.log(`[${new Date()}] ${message} being mock sent to ${toNumber}`);
-        })
+        const job = createCron(scheduledMessage);
         console.log(`${jobUUID} -- job created`);
 
         // Cache the job so we can keep track of it
@@ -130,6 +109,30 @@ class RecurringJobSystem {
         console.error(`${jobUUID} -- job not found`);
         return false;
     }
+}
+
+function createCron(model) {
+    console.log(model);
+    // All null values will have the system run every 1 min
+    var rule = new schedule.RecurrenceRule();
+    // TODO: We're currently only using the first recurrence rule, we should either change this to be
+    // not an array in the db or we should iterate here
+    const modelRules = model.recurring.rules[0];
+
+    if (modelRules.second !== null) { rule.second = modelRules.second }
+    // Everything defaults to null except second, so we don't need
+    // to check here before setting
+    rule.minute = (modelRules.minute) ? modelRules.minute : null;
+    rule.hour = (modelRules.hour) ? modelRules.hour : null;
+    // The cron doesn't take an empty array and it must be replaced with a null
+    rule.dayOfWeek = (modelRules.dayOfWeek && modelRules.dayOfWeek.length > 0) ? modelRules.dayOfWeek : null;
+    console.log(`Rule: ${JSON.stringify(rule)}`);
+
+    return schedule.scheduleJob(rule, () => {
+        // We will want to replace this with a twilio sms function here
+        // or let users pass in a function
+        console.log(`[${new Date()}] ${model.message} being mock sent to ${model.toNumber}`);
+    });
 }
 
 export default RecurringJobSystem;
