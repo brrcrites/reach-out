@@ -37,6 +37,8 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
 // Initialize job system for working with recurring tasks and save it as a local variable to the app
 app.locals.jobSystem = new RecurringJobSystem();
 
+app.post('/sms-response', function(req, res, next) {
+});
 // TODO: For now I'm just sending the error messages through to the frontend to aid in debugging, but we should probably
 // update these to sanitize the messages in the future
 app.post('/send-sms', function(req, res, next) {

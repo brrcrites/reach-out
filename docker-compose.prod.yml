@@ -17,9 +17,12 @@ services:
         depends_on:
             - webapp-server
     webapp-server:
+        env_file: server/.env
         build:
             context: server
             dockerfile: Dockerfile
+            args:
+                - TWILIO_SMS_NUMBER
         image: myapp-server-img
         container_name: myapp_server
         volumes:
@@ -29,7 +32,6 @@ services:
             - "8081:8081"
         depends_on:
             - mongo
-        env_file: server/.env
         networks:
             - app-network
     mongo:
