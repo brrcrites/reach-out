@@ -74,7 +74,7 @@ class RecurringJobSystem {
         rule.date = (date) ? date : null;
         rule.month = (month) ? month : null;
         rule.year = (year) ? year : null;
-        rule.dayOfWeek = (dayOfWeek) ? dayOfWeek : null;
+        rule.dayOfWeek = (dayOfWeek && dayOfWeek.length > 0) ? dayOfWeek : null;
         console.log(`Rule: ${JSON.stringify(rule)}`);
 
         // Allowing the user to pass in an optional uuid for the future case
