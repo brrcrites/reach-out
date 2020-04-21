@@ -60,8 +60,30 @@ class RecurringJobSystem {
         toNumber,
         uuid = null
     }) {
-        // TODO: We should check that there is a valid message and toNumber here
-        // and then throw some type of error if they aren't valid
+        // Allowing the user to pass in an optional uuid for the future case
+        // where we need to reboot the server and want it to be bootstrapped
+        // from the mongo db and carry the old uuids for book keeping
+        const jobUUID = (uuid) ? uuid : uuidv4();
+
+        // Create the mongo model for the recurring job and use it as the
+        // validation step
+        const scheduledMessage = new ScheduledMessage({
+            toPhoneNumber: toNumber,
+            message: message,
+            scheduled_uuid: jobUUID,
+            fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
+            recurring: {
+                rules: [{
+                    dayOfWeek: dayOfWeek,
+                    hour: hour,
+                    minute: minute,
+                    second: second,
+                }]
+            }
+        });
+        scheduledMessage.save( (err,msg) => { if (err) { console.error(err); return jobUUID; } });
+        // TODO: Figure out how we want to handle the above failure case
+        console.log(`${jobUUID} -- job saved`);
 
         // All null values will have the system run every 1 min
         var rule = new schedule.RecurrenceRule();
@@ -77,36 +99,16 @@ class RecurringJobSystem {
         rule.dayOfWeek = (dayOfWeek && dayOfWeek.length > 0) ? dayOfWeek : null;
         console.log(`Rule: ${JSON.stringify(rule)}`);
 
-        // Allowing the user to pass in an optional uuid for the future case
-        // where we need to reboot the server and want it to be bootstrapped
-        // from the mongo db and carry the old uuids for book keeping
-        const jobUUID = (uuid) ? uuid : uuidv4();
-
         var job = schedule.scheduleJob(rule, () => {
             // We will want to replace this with a twilio sms function here
             // or let users pass in a function
             console.log(`[${new Date()}] ${message} being mock sent to ${toNumber}`);
         })
-        console.log(`${jobUUID} -- job created`)
+        console.log(`${jobUUID} -- job created`);
 
         // Cache the job so we can keep track of it
         this.jobCache.set(jobUUID, job);
         console.log(`${jobUUID} -- job registered`);
-        const scheduledMessage = new ScheduledMessage({
-            toPhoneNumber: toNumber,
-            message: message,
-            scheduled_uuid: jobUUID,
-            fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
-            recurring: {
-                rules: [{
-                    dayOfWeek: dayOfWeek,
-                    hour: hour,
-                    minute: minute,
-                    second: second,
-                }]
-            }
-        });
-        scheduledMessage.save((err,msg)=>{ if (err) { console.log(err); } });
 
         return jobUUID;
     }
