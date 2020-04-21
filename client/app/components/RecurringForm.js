@@ -94,7 +94,7 @@ const RecurringForm = () => {
     async function loadData() {
         try {
             setLoading(true);
-            const response = await client.get('/recurring-list');
+            const response = await client.get('/recurring-list?all=true');
             console.log(response);
             setHistory(response.data);
         } catch (e) {
