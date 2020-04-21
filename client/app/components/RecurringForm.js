@@ -32,11 +32,6 @@ function daysToDayRange(monday, tuesday, wednesday, thursday, friday, saturday, 
 
 // TODO: The days of the week need to be pre-processed or something, this is way too many params
 function createRecurringJob(toNumber, message, hour, minute, monday, tuesday, wednesday, thursday, friday, saturday, sunday, setResponse) {
-    console.log(`toNumber: ${toNumber}`);
-    console.log(`message: ${message}`);
-    console.log(`hour: ${hour}`);
-    console.log(`minute: ${minute}`);
-
     // TODO: This gives us a date object based on today with the time requested and then we pull out the UTC portions
     // when sending it to the backend because cron seems to run on a UTC clock. This feels really bad and probably wont
     // stand up to things like daylight savings so we will need to fix it somehow

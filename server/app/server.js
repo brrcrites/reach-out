@@ -101,9 +101,6 @@ app.post('/recurring-create', function(req, res, next) {
         message: req.body.message,
         minute: req.body?.minute,
         hour: req.body?.hour,
-        date: req.body?.date,
-        month: req.boty?.month,
-        year: req.body?.year,
         dayOfWeek: req.body?.dayOfWeek
     });
 
