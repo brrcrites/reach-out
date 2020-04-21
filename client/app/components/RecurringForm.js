@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import RecurringHistoryListItem from './RecurringHistoryListItem.js';
 
 // Axios configuration for backend server is defined here
 import client from '../client.js';
@@ -81,10 +82,33 @@ const RecurringForm = () => {
     const [saturdaySelected, setSaturdaySelected] = useState(false);
     const [sundaySelected, setSundaySelected] = useState(false);
     const [response, setResponse] = useState('No Message');
+    const [history, setHistory] = useState([]);
 
     const hourRE = /^[0-2]?[0-9]?$/;
     const minuteRE = /^[0-5]?[0-9]?$/;
 
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // TODO: We need to re-use this type of functionality on each page that loads when when the page loads
+    async function loadData() {
+        try {
+            setLoading(true);
+            const response = await client.get('/recurring-list');
+            console.log(response);
+            setHistory(response.data);
+        } catch (e) {
+            setError(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        loadData();
+    }, [])
+
+    if (loading) { return (<h1>LOADING</h1>); }
     return (
         <div>
             <h1>Recurring Page</h1>
@@ -215,6 +239,12 @@ const RecurringForm = () => {
             </form>
             <div>
                 { response }
+            </div>
+            <div>
+                <h2>Recurring Job Log</h2>
+                <ul>
+                    { history.map( (job) => <RecurringHistoryListItem data={job} /> ) }
+                </ul>
             </div>
         </div>
     );
