@@ -30,6 +30,7 @@ if(!process.env.TWILIO_AUTH_TOKEN) {
 const app = express();
 app.use(cors()); // TODO: This allows CORS requests to the server and was necessary for local dev, can we remove it when using docker?
 app.use(bodyParser.json()); // Allows JSON payloads in the body of requests
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Initialize twilio client so we can send messages
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -38,6 +39,8 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
 app.locals.jobSystem = new RecurringJobSystem();
 
 app.post('/sms-response', function(req, res, next) {
+    console.log(req.body.Body);
+    return res.sendStatus(200);
 });
 // TODO: For now I'm just sending the error messages through to the frontend to aid in debugging, but we should probably
 // update these to sanitize the messages in the future

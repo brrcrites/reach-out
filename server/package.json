@@ -33,7 +33,6 @@
     "dotenv-cli": "^3.0.0"
   },
   "scripts": {
-    "prestart": "dotenv cross-var \"twilio phone-numbers:update %TWILIO_SMS_NUMBER% --sms-url=http://localhost:%PORT%/sms-reponse\"",
     "start": "node ./build/app.bundle.js",
     "build": "rm -rf build && webpack",
     "test": "jest --silent",
