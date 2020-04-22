@@ -28,9 +28,12 @@
     "jest": "^25.3.0",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "cross-var": "^1.1.0",
+    "dotenv-cli": "^3.0.0"
   },
   "scripts": {
+    "prestart": "dotenv cross-var \"twilio phone-numbers:update %TWILIO_SMS_NUMBER% --sms-url=http://localhost:%PORT%/sms-reponse\"",
     "start": "node ./build/app.bundle.js",
     "build": "rm -rf build && webpack",
     "test": "jest --silent",

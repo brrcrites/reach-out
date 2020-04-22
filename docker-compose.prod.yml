@@ -22,7 +22,8 @@ services:
             context: server
             dockerfile: Dockerfile
             args:
-                - TWILIO_SMS_NUMBER
+                - TWILIO_SMS_NUMBER=+17576459263
+                - PORT=8081
         image: myapp-server-img
         container_name: myapp_server
         volumes:
