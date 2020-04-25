@@ -1,7 +1,13 @@
 import schedule from 'node-schedule';
 import { v4 as uuidv4 } from 'uuid';
 import ScheduledMessage from './models/scheduledMessage.js';
+import Message from './models/message.js';
 import moment from 'moment';
+import twilio from 'twilio';
+
+// Initialize twilio client so we can send messages
+// TODO: We have this as a global right now, not sure if that is what we want
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 class RecurringJobSystem {
     constructor() {
@@ -55,7 +61,8 @@ class RecurringJobSystem {
         dayOfWeek = null,
         message,
         toNumber,
-        uuid = null
+        type = 'debug',
+        uuid = null,
     }) {
         // Allowing the user to pass in an optional uuid for the future case
         // where we need to reboot the server and want it to be bootstrapped
@@ -77,13 +84,14 @@ class RecurringJobSystem {
                     second: second,
                 }]
             }
+            // TODO: We should save the type here as well
         });
         scheduledMessage.save( (err,msg) => { if (err) { console.error(err); return jobUUID; } });
         // TODO: Figure out how we want to handle the above failure case
         console.log(`${jobUUID} -- job saved`);
 
-        const job = createCron(scheduledMessage);
-        console.log(`${jobUUID} -- job created`);
+        const job = createCron(scheduledMessage, type);
+        console.log(`${jobUUID} -- job created with type ${type}`);
 
         // Cache the job so we can keep track of it
         this.jobCache.set(jobUUID, job);
@@ -111,7 +119,7 @@ class RecurringJobSystem {
     }
 }
 
-function createCron(model) {
+function createCron(model, type) {
     console.log(model);
     // All null values will have the system run every 1 min
     var rule = new schedule.RecurrenceRule();
@@ -129,10 +137,53 @@ function createCron(model) {
     console.log(`Rule: ${JSON.stringify(rule)}`);
 
     return schedule.scheduleJob(rule, () => {
-        // We will want to replace this with a twilio sms function here
-        // or let users pass in a function
-        console.log(`[${new Date()}] ${model.message} being mock sent to ${model.toNumber}`);
+        if (type == 'sms') {
+            smsMessageJob(model);
+        }
+        else if (type == 'voice') {
+            voiceMessageJob(model);
+        }
+        else {
+            // TODO: Right now we assume anything besides sms or voice is intended to be a debug, but we
+            // should probably error instead if it isn't exactly a debug
+            debugMessageJob(model);
+        }
     });
+}
+
+// Note that the below sms, voice, and debug message jobs are intended to be run asycnronously within a cron
+function smsMessageJob(model) {
+    client.messages.create({
+        body: model.message,
+        from: process.env.TWILIO_SMS_NUMBER,
+        to: model.toPhoneNumber
+    })
+    .then(() => {
+        // Log message in db
+        const message = new Message({
+            toPhoneNumber: model.toPhoneNumber,
+            fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
+            message: model.message,
+            time: moment()
+        });
+        message.save()
+        .catch((error) => {
+            console.error(error);
+            // TODO: We probably need to actually do something here in the long term besides log to console
+        });
+    })
+    .catch((error) => {
+        console.error(error);
+        // TODO: We probably need to actually do something here in the long term besides log to console
+    });
+}
+
+function voiceMessageJob(model) {
+    console.error('TODO: Implement voice message job functionality')
+}
+
+function debugMessageJob(model) {
+    console.log(`[${new Date()}] ${model.message} being mock sent to ${model.toPhoneNumber}`);
 }
 
 export default RecurringJobSystem;

@@ -3,7 +3,6 @@ import bodyParser from 'body-parser'
 import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
-import ScheduledMessage from './models/scheduledMessage.js';
 import moment from 'moment';
 import RecurringJobSystem from './RecurringJob';
 import db from './src/database.js';
@@ -99,6 +98,7 @@ app.post('/recurring-create', function(req, res, next) {
     const jobUUID = app.locals.jobSystem.createJob({
         toNumber: req.body.toNumber,
         message: req.body.message,
+        type: req.body?.type,
         minute: req.body?.minute,
         hour: req.body?.hour,
         dayOfWeek: req.body?.dayOfWeek
