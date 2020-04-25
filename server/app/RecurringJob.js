@@ -184,6 +184,18 @@ function voiceMessageJob(model) {
 
 function debugMessageJob(model) {
     console.log(`[${new Date()}] ${model.message} being mock sent to ${model.toPhoneNumber}`);
+    // Log message in db, even when we are in debug mode so we can easily test portions which utilize the db
+    const message = new Message({
+        toPhoneNumber: model.toPhoneNumber,
+        fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
+        message: model.message,
+        time: moment()
+    });
+    message.save()
+    .catch((error) => {
+        console.error(error);
+        // TODO: We probably need to actually do something here in the long term besides log to console
+    });
 }
 
 export default RecurringJobSystem;
