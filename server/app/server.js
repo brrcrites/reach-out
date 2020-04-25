@@ -3,7 +3,6 @@ import bodyParser from 'body-parser'
 import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
-import ScheduledMessage from './models/scheduledMessage.js';
 import moment from 'moment';
 import RecurringJobSystem from './RecurringJob';
 import db from './src/database.js';
@@ -35,7 +34,7 @@ app.use(bodyParser.json()); // Allows JSON payloads in the body of requests
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // Initialize job system for working with recurring tasks and save it as a local variable to the app
-app.locals.jobSystem = new RecurringJobSystem();
+app.locals.jobSystem = new RecurringJobSystem(client);
 
 // TODO: For now I'm just sending the error messages through to the frontend to aid in debugging, but we should probably
 // update these to sanitize the messages in the future
@@ -99,6 +98,7 @@ app.post('/recurring-create', function(req, res, next) {
     const jobUUID = app.locals.jobSystem.createJob({
         toNumber: req.body.toNumber,
         message: req.body.message,
+        type: req.body?.type,
         minute: req.body?.minute,
         hour: req.body?.hour,
         dayOfWeek: req.body?.dayOfWeek
