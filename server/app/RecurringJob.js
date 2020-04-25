@@ -3,15 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import ScheduledMessage from './models/scheduledMessage.js';
 import Message from './models/message.js';
 import moment from 'moment';
-import twilio from 'twilio';
-
-// Initialize twilio client so we can send messages
-// TODO: We have this as a global right now, not sure if that is what we want
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 class RecurringJobSystem {
-    constructor() {
+    constructor(client) {
         this.jobCache = new Map();
+        this.client = client;
     }
 
     getAll(callback) {
@@ -90,7 +86,7 @@ class RecurringJobSystem {
         // TODO: Figure out how we want to handle the above failure case
         console.log(`${jobUUID} -- job saved`);
 
-        const job = createCron(scheduledMessage, type);
+        const job = this._createCron(scheduledMessage, type);
         console.log(`${jobUUID} -- job created with type ${type}`);
 
         // Cache the job so we can keep track of it
@@ -117,49 +113,74 @@ class RecurringJobSystem {
         console.error(`${jobUUID} -- job not found`);
         return false;
     }
-}
 
-function createCron(model, type) {
-    console.log(model);
-    // All null values will have the system run every 1 min
-    var rule = new schedule.RecurrenceRule();
-    // TODO: We're currently only using the first recurrence rule, we should either change this to be
-    // not an array in the db or we should iterate here
-    const modelRules = model.recurring.rules[0];
+    // Note: Using the _ as a "standard" for defining private members and functions
+    _createCron(model, type) {
+        console.log(model);
+        // All null values will have the system run every 1 min
+        var rule = new schedule.RecurrenceRule();
+        // TODO: We're currently only using the first recurrence rule, we should either change this to be
+        // not an array in the db or we should iterate here
+        const modelRules = model.recurring.rules[0];
 
-    if (modelRules.second !== null) { rule.second = modelRules.second }
-    // Everything defaults to null except second, so we don't need
-    // to check here before setting
-    rule.minute = (modelRules.minute) ? modelRules.minute : null;
-    rule.hour = (modelRules.hour) ? modelRules.hour : null;
-    // The cron doesn't take an empty array and it must be replaced with a null
-    rule.dayOfWeek = (modelRules.dayOfWeek && modelRules.dayOfWeek.length > 0) ? modelRules.dayOfWeek : null;
-    console.log(`Rule: ${JSON.stringify(rule)}`);
+        if (modelRules.second !== null) { rule.second = modelRules.second }
+        // Everything defaults to null except second, so we don't need
+        // to check here before setting
+        rule.minute = (modelRules.minute) ? modelRules.minute : null;
+        rule.hour = (modelRules.hour) ? modelRules.hour : null;
+        // The cron doesn't take an empty array and it must be replaced with a null
+        rule.dayOfWeek = (modelRules.dayOfWeek && modelRules.dayOfWeek.length > 0) ? modelRules.dayOfWeek : null;
+        console.log(`Rule: ${JSON.stringify(rule)}`);
 
-    return schedule.scheduleJob(rule, () => {
-        if (type == 'sms') {
-            smsMessageJob(model);
-        }
-        else if (type == 'voice') {
-            voiceMessageJob(model);
-        }
-        else {
-            // TODO: Right now we assume anything besides sms or voice is intended to be a debug, but we
-            // should probably error instead if it isn't exactly a debug
-            debugMessageJob(model);
-        }
-    });
-}
+        return schedule.scheduleJob(rule, () => {
+            if (type == 'sms') {
+                this._smsMessageJob(model);
+            }
+            else if (type == 'voice') {
+                this._voiceMessageJob(model);
+            }
+            else {
+                // TODO: Right now we assume anything besides sms or voice is intended to be a debug, but we
+                // should probably error instead if it isn't exactly a debug
+                this._debugMessageJob(model);
+            }
+        });
+    }
 
-// Note that the below sms, voice, and debug message jobs are intended to be run asycnronously within a cron
-function smsMessageJob(model) {
-    client.messages.create({
-        body: model.message,
-        from: process.env.TWILIO_SMS_NUMBER,
-        to: model.toPhoneNumber
-    })
-    .then(() => {
-        // Log message in db
+    // Note that the below sms, voice, and debug message jobs are intended to be run asycnronously within a cron
+    _smsMessageJob(model) {
+        this.client.messages.create({
+            body: model.message,
+            from: process.env.TWILIO_SMS_NUMBER,
+            to: model.toPhoneNumber
+        })
+        .then(() => {
+            // Log message in db
+            const message = new Message({
+                toPhoneNumber: model.toPhoneNumber,
+                fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
+                message: model.message,
+                time: moment()
+            });
+            message.save()
+            .catch((error) => {
+                console.error(error);
+                // TODO: We probably need to actually do something here in the long term besides log to console
+            });
+        })
+        .catch((error) => {
+            console.error(error);
+            // TODO: We probably need to actually do something here in the long term besides log to console
+        });
+    }
+
+    _voiceMessageJob(model) {
+        console.error('TODO: Implement voice message job functionality')
+    }
+
+    _debugMessageJob(model) {
+        console.log(`[${new Date()}] ${model.message} being mock sent to ${model.toPhoneNumber}`);
+        // Log message in db, even when we are in debug mode so we can easily test portions which utilize the db
         const message = new Message({
             toPhoneNumber: model.toPhoneNumber,
             fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
@@ -171,31 +192,7 @@ function smsMessageJob(model) {
             console.error(error);
             // TODO: We probably need to actually do something here in the long term besides log to console
         });
-    })
-    .catch((error) => {
-        console.error(error);
-        // TODO: We probably need to actually do something here in the long term besides log to console
-    });
-}
-
-function voiceMessageJob(model) {
-    console.error('TODO: Implement voice message job functionality')
-}
-
-function debugMessageJob(model) {
-    console.log(`[${new Date()}] ${model.message} being mock sent to ${model.toPhoneNumber}`);
-    // Log message in db, even when we are in debug mode so we can easily test portions which utilize the db
-    const message = new Message({
-        toPhoneNumber: model.toPhoneNumber,
-        fromPhoneNumber: process.env.TWILIO_SMS_NUMBER,
-        message: model.message,
-        time: moment()
-    });
-    message.save()
-    .catch((error) => {
-        console.error(error);
-        // TODO: We probably need to actually do something here in the long term besides log to console
-    });
+    }
 }
 
 export default RecurringJobSystem;

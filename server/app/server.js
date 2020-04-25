@@ -34,7 +34,7 @@ app.use(bodyParser.json()); // Allows JSON payloads in the body of requests
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // Initialize job system for working with recurring tasks and save it as a local variable to the app
-app.locals.jobSystem = new RecurringJobSystem();
+app.locals.jobSystem = new RecurringJobSystem(client);
 
 // TODO: For now I'm just sending the error messages through to the frontend to aid in debugging, but we should probably
 // update these to sanitize the messages in the future
