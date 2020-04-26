@@ -21,6 +21,7 @@ services:
         build:
             context: server
             dockerfile: Dockerfile
+            args:
                 - PORT=8081
         image: myapp-server-img
         container_name: myapp_server
@@ -30,7 +31,7 @@ services:
         ports:
             - "8081:8081"
         depends_on:
-            - mongo
+            - mongo 
         networks:
             - app-network
     mongo:

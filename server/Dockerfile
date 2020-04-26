@@ -1,9 +1,7 @@
-ARG PORT=8081
 FROM node:latest
 
 WORKDIR /code
 ARG PORT
-ENV port $PORT
 
 # Copy in package.json and install so it can cache the npm package layer
 COPY package.json .

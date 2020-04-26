@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
+import MessageResponse from './models/messageResponse.js';
 import moment from 'moment';
 import RecurringJobSystem from './RecurringJob';
 import db from './src/database.js';
@@ -29,6 +30,7 @@ if(!process.env.TWILIO_AUTH_TOKEN) {
 const app = express();
 app.use(cors()); // TODO: This allows CORS requests to the server and was necessary for local dev, can we remove it when using docker?
 app.use(bodyParser.json()); // Allows JSON payloads in the body of requests
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Initialize twilio client so we can send messages
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -36,6 +38,25 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
 // Initialize job system for working with recurring tasks and save it as a local variable to the app
 app.locals.jobSystem = new RecurringJobSystem(client);
 
+app.post('/sms-response', function(req, res, next) {
+    console.log(req.body);
+    const originalMessage = Message.find({ toPhoneNumber: req.body.From })
+        .sort('-date').exec(function(err,docs) {
+            if (err) { console.error(err); } 
+            else if (docs.length == 0) { console.error(`No messages sent to ${req.body.From}`); }
+            else { 
+                const response = new MessageResponse({
+                    responseTo: docs[0]._id,
+                    fromPhoneNumber: req.body.From,
+                    message: req.body.Body
+                });
+                response.save()
+                    .then(()=> { console.log(`Saved ${response._id}.`); })
+                    .catch((err)=>{ console.error(err); });
+            }
+        });
+    return res.sendStatus(204); // Send "No Content" 
+});
 // TODO: For now I'm just sending the error messages through to the frontend to aid in debugging, but we should probably
 // update these to sanitize the messages in the future
 app.post('/send-sms', function(req, res, next) {
