@@ -4,7 +4,6 @@ import cors from 'cors';
 import twilio from 'twilio';
 import Message from './models/message.js';
 import MessageResponse from './models/messageResponse.js';
-import ScheduledMessage from './models/scheduledMessage.js';
 import moment from 'moment';
 import RecurringJobSystem from './RecurringJob';
 import db from './src/database.js';
@@ -37,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // Initialize job system for working with recurring tasks and save it as a local variable to the app
-app.locals.jobSystem = new RecurringJobSystem();
+app.locals.jobSystem = new RecurringJobSystem(client);
 
 app.post('/sms-response', function(req, res, next) {
     console.log(req.body);
@@ -101,7 +100,8 @@ function sanitizeMessage(message) {
     }
 }
 
-app.get('/message-history', function(req, res, next) {
+// TODO: Add query parameter here to look for a specific to number
+app.get('/messages-sent', function(req, res, next) {
     Message.find({}, function(err, result) {
         if(err) {
             return res.send(err);
@@ -112,6 +112,22 @@ app.get('/message-history', function(req, res, next) {
     });
 });
 
+// TODO: Add query parameter here to look for a specific (from?) number
+app.get('/messages-received', function(req, res, next) {
+    // TODO: This is an example message so I can work on the frontend while waiting for #19 to merge
+    return res.json(
+        [
+            {
+                'responseTo': 'reference-id',
+                'fromPhoneNumber': process.env.TWILIO_SMS_NUMBER,
+                'message': 'this is a dummy message',
+                'timeZone': 'this is a dummy timeZone',
+                'time': moment()
+            }
+        ]
+    )
+});
+
 app.post('/recurring-create', function(req, res, next) {
     console.log(`/recurring-create body: ${JSON.stringify(req.body)}`);
     if (!req.body?.toNumber || !req.body?.message) {
@@ -120,6 +136,7 @@ app.post('/recurring-create', function(req, res, next) {
     const jobUUID = app.locals.jobSystem.createJob({
         toNumber: req.body.toNumber,
         message: req.body.message,
+        type: req.body?.type,
         minute: req.body?.minute,
         hour: req.body?.hour,
         dayOfWeek: req.body?.dayOfWeek

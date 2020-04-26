@@ -31,7 +31,7 @@ function daysToDayRange(monday, tuesday, wednesday, thursday, friday, saturday, 
 }
 
 // TODO: The days of the week need to be pre-processed or something, this is way too many params
-function createRecurringJob(toNumber, message, hour, minute, monday, tuesday, wednesday, thursday, friday, saturday, sunday, setResponse) {
+function createRecurringJob(toNumber, message, type, hour, minute, monday, tuesday, wednesday, thursday, friday, saturday, sunday, setResponse) {
     // TODO: This gives us a date object based on today with the time requested and then we pull out the UTC portions
     // when sending it to the backend because cron seems to run on a UTC clock. This feels really bad and probably wont
     // stand up to things like daylight savings so we will need to fix it somehow
@@ -44,6 +44,7 @@ function createRecurringJob(toNumber, message, hour, minute, monday, tuesday, we
     var data = JSON.stringify({
         toNumber: toNumber,
         message: message,
+        type: type,
         hour: dataDate.getUTCHours(),
         minute: dataDate.getUTCMinutes(),
         dayOfWeek: daysToDayRange(monday, tuesday, wednesday, thursday, friday, saturday, sunday)
@@ -76,6 +77,7 @@ const RecurringForm = () => {
     const [fridaySelected, setFridaySelected] = useState(false);
     const [saturdaySelected, setSaturdaySelected] = useState(false);
     const [sundaySelected, setSundaySelected] = useState(false);
+    const [type, setType] = useState('debug')
     const [response, setResponse] = useState('No Message');
     const [history, setHistory] = useState([]);
 
@@ -114,7 +116,8 @@ const RecurringForm = () => {
                     event.preventDefault(); 
                     createRecurringJob(
                         toNumber, 
-                        message, 
+                        message,
+                        type,
                         hour, 
                         minute, 
                         mondaySelected, 
@@ -229,6 +232,12 @@ const RecurringForm = () => {
                         onChange={ (e) => { setSundaySelected(!sundaySelected) }}
                     />
                 </label>
+                <br />
+                <select id="type" name="type" value={type} onChange={ (e) => { setType(e.target.value) }}>
+                    <option value="debug">Debug</option>
+                    <option value="sms">SMS</option>
+                    <option value="voice">Voice</option>
+                </select>
                 <br />
                 <input type="submit" value="Submit" />
             </form>
