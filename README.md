@@ -13,3 +13,12 @@ This will launch your container(s) for development. Once you are done
 * `Ctrl-c`
 * `docker-compose -f docker-compose.dev.yml down`
 And don't forget to `Ctrl-c` to close the `ngrok` tunnel to your local machine in the other terminal. 
+### Environment Variables
+Add these values to a `server/.env` file. See `.env.example` for the values needed. 
+ - `PORT`: The port the server docker container will be exposed on (i.e. 8081)
+ - `TWILIO_SMS_NUMBER`: Your twilio SMS number
+ - `TWILIO_ACCOUNT_SID`: Your twilio account SID
+ - `TWILIO_AUTH_TOKEN`: Your twilio authorization token
+ - `MONGO_HOSTNAME`: The name of your Mongo server
+ - `MONGO_PORT`: The port your Mongo docker container will be exposed on (i.e. 27017)
+ - `MONGO_DB`: The name of your MongoDB
