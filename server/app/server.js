@@ -79,7 +79,8 @@ function sanitizeMessage(message) {
     }
 }
 
-app.get('/message-history', function(req, res, next) {
+// TODO: Add query parameter here to look for a specific to number
+app.get('/messages-sent', function(req, res, next) {
     Message.find({}, function(err, result) {
         if(err) {
             return res.send(err);
@@ -88,6 +89,22 @@ app.get('/message-history', function(req, res, next) {
             return res.json(result.map( (item) => { return sanitizeMessage(item); }));
         }
     });
+});
+
+// TODO: Add query parameter here to look for a specific (from?) number
+app.get('/messages-received', function(req, res, next) {
+    // TODO: This is an example message so I can work on the frontend while waiting for #19 to merge
+    return res.json(
+        [
+            {
+                'responseTo': 'reference-id',
+                'fromPhoneNumber': process.env.TWILIO_SMS_NUMBER,
+                'message': 'this is a dummy message',
+                'timeZone': 'this is a dummy timeZone',
+                'time': moment()
+            }
+        ]
+    )
 });
 
 app.post('/recurring-create', function(req, res, next) {
