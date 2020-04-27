@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 
 // Axios configuration for backend server is defined here
 import client from '../client.js';
@@ -7,10 +6,13 @@ import client from '../client.js';
 // Source: https://codepen.io/samuelkraft/pen/Farhl
 // Source: https://leaverou.github.io/bubbly/
 // Source: https://codepen.io/swards/pen/gxQmbj
+
+// TODO: Figure out how to left/right justify the different bubbles
 const Chat = styled.div`
 display: flex;
 flex-direction: column;
 font-family: "Helvetica Neue";
+padding: 20px;
 `;
 
 const ReceivedMessage = styled.div`
@@ -19,9 +21,7 @@ color: black;
 background: #E5E5EA;
 border-radius: .4em;
 padding: 10px;
-align-self: left;
-align-content: left;
-margin-top: 10px;
+margin-bottom: 10px;
 max-width: 40%;
 
 &:after {
@@ -32,7 +32,7 @@ max-width: 40%;
 	width: 0;
 	height: 0;
 	border: 20px solid transparent;
-	border-right-color: #00aabb;
+	border-right-color: #E5E5EA;
 	border-left: 0;
 	border-bottom: 0;
 	margin-top: -10px;
@@ -46,9 +46,7 @@ color: white;
 background: #0B93F6;
 border-radius: .4em;
 padding: 10px;
-align-self: right;
-align-content: right;
-margin-top: 10px;
+margin-bottom: 10px;
 max-width: 40%;
 
 &:after {
@@ -59,7 +57,7 @@ max-width: 40%;
 	width: 0;
 	height: 0;
 	border: 20px solid transparent;
-	border-left-color: #00aabb;
+	border-left-color: #0B93F6;
 	border-right: 0;
 	border-bottom: 0;
 	margin-top: -10px;
@@ -77,14 +75,13 @@ function compareByTimestamp(a, b) {
     return 0;
 }
 
-// TODO: Need to annotate if its a send or recieve so it can be handled differently
-// in the rendering
 function sortAndZipperChatHistory(received, sent) {
-    let receivedSorted = (received) ? received.sort(compareByTimestamp) : [];
-    let sentSorted = (sent) ? sent.sort(compareByTimestamp) : [];
+    // Sort is in-place so we need to make a copy before modifying it
+    let receivedSorted = (received) ? [...received].sort(compareByTimestamp) : [];
+    let sentSorted = (sent) ? [...sent].sort(compareByTimestamp) : [];
     let generatedReturn = []
 
-    while (receivedSorted.length > 0 && sentSorted.length > 0) {
+    while (receivedSorted.length && sentSorted.length) {
         if (receivedSorted[0].time < sentSorted[0].time) {
             generatedReturn = generatedReturn.concat({ 'type': 'received', 'obj': receivedSorted[0] });
             receivedSorted.shift();
@@ -93,13 +90,13 @@ function sortAndZipperChatHistory(received, sent) {
             sentSorted.shift();
         }
     }
-    // TODO: Concat can append the entire list, how can I leverage that here rather
-    // than having to iterate over the whole thing?
+    // TODO: Concat can append the entire list, how can I leverage that here rather than having to iterate over the whole thing?
     while (receivedSorted.length > 0) {
+s
         generatedReturn = generatedReturn.concat({ 'type': 'received', 'obj': receivedSorted[0] });
         receivedSorted.shift();
     }
-    while (sentSorted.length > 0) {
+    while (sentSorted.lenght) {
         generatedReturn = generatedReturn.concat({ 'type': 'sent', 'obj': sentSorted[0] });
         sentSorted.shift();
     }
@@ -107,7 +104,7 @@ function sortAndZipperChatHistory(received, sent) {
     return generatedReturn;
 }
 
-const AdminPanel = () => {
+const ChatHistory = () => {
     const [messagesSent, setMessagesSent] = useState([]);
     const [messagesReceived, setMessagesReceived] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -135,10 +132,8 @@ const AdminPanel = () => {
         }
     }
 
-    // The useEffect hook will re-execute (and I believe re-render the component)
-    // whenever one of the values in the second parameter changes. Since the second
-    // parameter is an empty array, it will be run exactly once when the component
-    // loads
+    // The useEffect hook will re-execute (and I believe re-render the component) whenever one of the values in the second parameter changes. Since the second
+    // parameter is an empty array, it will be run exactly once when the component loads
     useEffect(() => {
         loadData();
     }, []);
@@ -146,29 +141,7 @@ const AdminPanel = () => {
     if (loading) { return (<h1>LOADING</h1>)}
     return(
         <div>
-            <h1>Admin Panel Page</h1>
-            <h2>Sent Message History:</h2>
-                <ul>
-                {
-                    // Check that there is some history, and then unpack each item in
-                    // the history as a list item
-                    // TODO: Chage this to create a table
-                    messagesSent && messagesSent.map( (item, index) => {
-                        return <li key={index}>SENT: {item.time} -- [from: {item.fromPhoneNumber}, to: {item.toPhoneNumber}] -- {item.message}</li>
-                    })
-                }
-                </ul>
-            <br />
-            <h2>Received Message History:</h2>
-                <ul>
-                {
-                    messagesReceived && messagesReceived.map( (item, index) => {
-                        return <li key={index}>RECEIVED: {item.time} -- [from: {item.fromPhoneNumber}] -- {item.message}</li>
-                    })
-                }
-                </ul>
-            <br />
-            <h2>Chat History (Unified)</h2>
+            <h1>Chat History</h1>
                 <Chat>
                 {
                     (messagesSent || messagesReceived) && sortAndZipperChatHistory(messagesReceived, messagesSent).map( (item, index) => {
@@ -180,8 +153,27 @@ const AdminPanel = () => {
                     })
                 }
                 </Chat>
+            <h2>Sent Message History (Debug):</h2>
+                <ul>
+                {
+                    // Check that there is some history, and then unpack each item in the history as a list item
+                    messagesSent && messagesSent.map( (item, index) => {
+                        return <li key={index}>SENT: {item.time} -- [from: {item.fromPhoneNumber}, to: {item.toPhoneNumber}] -- {item.message}</li>
+                    })
+                }
+                </ul>
+            <br />
+            <h2>Received Message History (Debug):</h2>
+                <ul>
+                {
+                    messagesReceived && messagesReceived.map( (item, index) => {
+                        return <li key={index}>RECEIVED: {item.time} -- [from: {item.fromPhoneNumber}] -- {item.message}</li>
+                    })
+                }
+                </ul>
+            <br />
         </div>
     )
 }
 
-export default AdminPanel;
+export default ChatHistory;

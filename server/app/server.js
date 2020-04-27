@@ -103,7 +103,7 @@ function sanitizeMessage(message) {
 app.get('/messages-sent', function(req, res, next) {
     Message.find({}, function(err, result) {
         if(err) {
-            return res.status(500).send(err);
+            return res.send(err);
         } else {
             // Sanitize the message before returning it
             return res.json(result.map( (item) => { return sanitizeMessage(item); }));
@@ -113,14 +113,18 @@ app.get('/messages-sent', function(req, res, next) {
 
 // TODO: Add query parameter here to look for a specific (from?) number
 app.get('/messages-received', function(req, res, next) {
-    MessageResponse.find({}, function(err, result) {
-        if(err) {
-            return res.status(500).send(err);
-        } else {
-            // TODO: Consider sanitizing this the way we do for the /messages-sent endpoint
-            return res.json(result);
-        }
-    })
+    // TODO: This is an example message so I can work on the frontend while waiting for #19 to merge
+    return res.json(
+        [
+            {
+                'responseTo': 'reference-id',
+                'fromPhoneNumber': process.env.TWILIO_SMS_NUMBER,
+                'message': 'this is a dummy message',
+                'timeZone': 'this is a dummy timeZone',
+                'time': moment()
+            }
+        ]
+    )
 });
 
 app.post('/recurring-create', function(req, res, next) {
