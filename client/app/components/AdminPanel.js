@@ -1,71 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 
 // Axios configuration for backend server is defined here
 import client from '../client.js';
-
-// Source: https://codepen.io/samuelkraft/pen/Farhl
-// Source: https://leaverou.github.io/bubbly/
-// Source: https://codepen.io/swards/pen/gxQmbj
-const Chat = styled.div`
-display: flex;
-flex-direction: column;
-font-family: "Helvetica Neue";
-`;
-
-const ReceivedMessage = styled.div`
-position: relative;
-color: black;
-background: #E5E5EA;
-border-radius: .4em;
-padding: 10px;
-align-self: left;
-align-content: left;
-margin-top: 10px;
-max-width: 40%;
-
-&:after {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 50%;
-	width: 0;
-	height: 0;
-	border: 20px solid transparent;
-	border-right-color: #00aabb;
-	border-left: 0;
-	border-bottom: 0;
-	margin-top: -10px;
-	margin-left: -20px;
-}
-`;
-
-const SentMessage = styled.div`
-position: relative;
-color: white;
-background: #0B93F6;
-border-radius: .4em;
-padding: 10px;
-align-self: right;
-align-content: right;
-margin-top: 10px;
-max-width: 40%;
-
-&:after {
-	content: '';
-	position: absolute;
-	right: 0;
-	top: 50%;
-	width: 0;
-	height: 0;
-	border: 20px solid transparent;
-	border-left-color: #00aabb;
-	border-right: 0;
-	border-bottom: 0;
-	margin-top: -10px;
-	margin-right: -20px;
-}
-`;
 
 function compareByTimestamp(a, b) {
     if (a.time < b.time) {
@@ -84,7 +20,7 @@ function sortAndZipperChatHistory(received, sent) {
     let sentSorted = (sent) ? sent.sort(compareByTimestamp) : [];
     let generatedReturn = []
 
-    while (receivedSorted.length > 0 && sentSorted.length > 0) {
+    while (receivedSorted.length && sentSorted.length) {
         if (receivedSorted[0].time < sentSorted[0].time) {
             generatedReturn = generatedReturn.concat({ 'type': 'received', 'obj': receivedSorted[0] });
             receivedSorted.shift();
@@ -95,11 +31,11 @@ function sortAndZipperChatHistory(received, sent) {
     }
     // TODO: Concat can append the entire list, how can I leverage that here rather
     // than having to iterate over the whole thing?
-    while (receivedSorted.length > 0) {
+    while (receivedSorted.length) {
         generatedReturn = generatedReturn.concat({ 'type': 'received', 'obj': receivedSorted[0] });
         receivedSorted.shift();
     }
-    while (sentSorted.length > 0) {
+    while (sentSorted.lenght) {
         generatedReturn = generatedReturn.concat({ 'type': 'sent', 'obj': sentSorted[0] });
         sentSorted.shift();
     }
@@ -108,8 +44,8 @@ function sortAndZipperChatHistory(received, sent) {
 }
 
 const AdminPanel = () => {
-    const [messagesSent, setMessagesSent] = useState([]);
-    const [messagesReceived, setMessagesReceived] = useState([]);
+    const [messagesSent, setMessagesSent] = useState(null);
+    const [messagesReceived, setMessagesReceived] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -169,17 +105,17 @@ const AdminPanel = () => {
                 </ul>
             <br />
             <h2>Chat History (Unified)</h2>
-                <Chat>
+                <ul>
                 {
                     (messagesSent || messagesReceived) && sortAndZipperChatHistory(messagesReceived, messagesSent).map( (item, index) => {
                         if (item.type == 'received') {
-                            return <ReceivedMessage key={index}>RECEIVED: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</ReceivedMessage>
+                            return <li key={index}>RECEIVED: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</li>
                         } else {
-                            return <SentMessage key={index}>SENT: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</SentMessage>
+                            return <li key={index}>SENT: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</li>
                         }
                     })
                 }
-                </Chat>
+                </ul>
         </div>
     )
 }
