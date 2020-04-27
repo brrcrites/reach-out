@@ -77,8 +77,9 @@ function compareByTimestamp(a, b) {
 }
 
 function sortAndZipperChatHistory(received, sent) {
-    let receivedSorted = (received) ? received.sort(compareByTimestamp) : [];
-    let sentSorted = (sent) ? sent.sort(compareByTimestamp) : [];
+    // Sort is in-place so we need to make a copy before modifying it
+    let receivedSorted = (received) ? [...received].sort(compareByTimestamp) : [];
+    let sentSorted = (sent) ? [...sent].sort(compareByTimestamp) : [];
     let generatedReturn = []
 
     while (receivedSorted.length > 0 && sentSorted.length > 0) {
@@ -103,7 +104,7 @@ function sortAndZipperChatHistory(received, sent) {
     return generatedReturn;
 }
 
-const AdminPanel = () => {
+const ChatHistory = () => {
     const [messagesSent, setMessagesSent] = useState([]);
     const [messagesReceived, setMessagesReceived] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -140,8 +141,7 @@ const AdminPanel = () => {
     if (loading) { return (<h1>LOADING</h1>)}
     return(
         <div>
-            <h1>Admin Panel Page</h1>
-            <h2>Chat History</h2>
+            <h1>Chat History</h1>
                 <Chat>
                 {
                     (messagesSent || messagesReceived) && sortAndZipperChatHistory(messagesReceived, messagesSent).map( (item, index) => {
@@ -176,4 +176,4 @@ const AdminPanel = () => {
     )
 }
 
-export default AdminPanel;
+export default ChatHistory;
