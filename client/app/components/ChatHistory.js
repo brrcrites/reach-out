@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 
 // Axios configuration for backend server is defined here
 import client from '../client.js';
@@ -82,7 +81,7 @@ function sortAndZipperChatHistory(received, sent) {
     let sentSorted = (sent) ? [...sent].sort(compareByTimestamp) : [];
     let generatedReturn = []
 
-    while (receivedSorted.length > 0 && sentSorted.length > 0) {
+    while (receivedSorted.length && sentSorted.length) {
         if (receivedSorted[0].time < sentSorted[0].time) {
             generatedReturn = generatedReturn.concat({ 'type': 'received', 'obj': receivedSorted[0] });
             receivedSorted.shift();
@@ -93,10 +92,11 @@ function sortAndZipperChatHistory(received, sent) {
     }
     // TODO: Concat can append the entire list, how can I leverage that here rather than having to iterate over the whole thing?
     while (receivedSorted.length > 0) {
+s
         generatedReturn = generatedReturn.concat({ 'type': 'received', 'obj': receivedSorted[0] });
         receivedSorted.shift();
     }
-    while (sentSorted.length > 0) {
+    while (sentSorted.lenght) {
         generatedReturn = generatedReturn.concat({ 'type': 'sent', 'obj': sentSorted[0] });
         sentSorted.shift();
     }
