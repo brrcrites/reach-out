@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 
 import InputForm from './components/InputForm.js';
 import RecurringForm from './components/RecurringForm.js';
-import AdminPanel from './components/AdminPanel.js';
 import DashboardPanel from './components/DashboardPanel.js';
 import ChatHistory from './components/ChatHistory.js';
 import Error from './components/Error.js';
@@ -19,7 +18,6 @@ class App extends Component {
                 <Switch>
                     <Route path='/' component={InputForm} exact />
                     <Route path='/recurring' component={RecurringForm} />
-                    <Route path='/admin' component={AdminPanel} />
                     <Route path='/dashboard' component={DashboardPanel} />
                     <Route path='/chat' component={ChatHistory} />
                     <Route component={Error} />
