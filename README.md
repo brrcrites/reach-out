@@ -1,4 +1,15 @@
-# twilio-dev-hack
+# REACH OUT
+**R**emote **E**lder **A**ssessment of **C**are and **H**ealth 
+## Description
+Are you worried about your parents or grandparents keeping up with their medication and staying healthy during this time? Would you want to still come check on them if it wouldn't expose them to increased risk of infection? With this application you are able to schedule reminder text messages to be sent to check-in on how someone is doing, or remind them to take their medication or their temperature to monitor their symptoms. Of course, a calendar event reminder can do the same, but how many of your parents or grandparents would use that? And wouldn't they prefer the personal touch of a text message from a loved one, albeit automated?
+## Stack
+ - **M**ongoDB
+ - **E**xpress
+ - **R**eact
+ - **N**odeJS
+ - Twilio API
+## Development
+Slack channel for communication, GitHub Projects Kanban board, docker-compose and Docker containers for development and Jest for testing with TravisCI for continuous integration. 
 ## Using docker-compose
 ### Requirements
 * Docker
