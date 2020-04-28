@@ -25,6 +25,7 @@ const NavBar = () => {
             <HorizontalNavBar>
                 <HorizontalNavItem to='/'>Home</HorizontalNavItem>
                 <HorizontalNavItem to='/recurring'>Recurring Jobs</HorizontalNavItem>
+                <HorizontalNavItem to='/dashboard'>Dashboard</HorizontalNavItem>
                 <HorizontalNavItem to='/chat'>Chat History</HorizontalNavItem>
             </HorizontalNavBar>
         </div>

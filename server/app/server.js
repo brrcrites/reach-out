@@ -39,7 +39,6 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
 app.locals.jobSystem = new RecurringJobSystem(client);
 
 app.post('/sms-response', function(req, res, next) {
-    console.log(req.body);
     const originalMessage = Message.find({ toPhoneNumber: req.body.From })
         .sort('-date').exec(function(err,docs) {
             if (err) { console.error(err); } 
