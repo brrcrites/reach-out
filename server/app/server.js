@@ -113,12 +113,13 @@ app.get('/messages-sent', function(req, res, next) {
 });
 
 // TODO: Add query parameter here to look for a specific (from?) number
+// TODO: Create a 'sanitizeMessage' for the responses
 app.get('/messages-received', function(req, res, next) {
     MessageResponse.find({}, function(err,result) {
         if (err) {
             return res.send(err);
         } else {
-            return res.json(result.map( (item) => { return sanitizeMessage(item); }));
+            return res.json(result);
         }
     });
 });
