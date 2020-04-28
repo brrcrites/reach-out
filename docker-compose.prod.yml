@@ -21,6 +21,7 @@ services:
         build:
             context: server
             dockerfile: Dockerfile
+            args:
                 - PORT=8081
         image: myapp-server-img
         container_name: myapp_server
