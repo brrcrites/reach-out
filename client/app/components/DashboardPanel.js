@@ -47,17 +47,18 @@ function compareByTimestamp(a, b) {
 }
 
 function curateMessageData(messagesSent,messagesReceived) {
-    let j = messagesReceived.length-1;
+    let j = 0;
     return messagesSent.map((item,i) => {
         item.responsesStart = j;
         let responses = 0;
-        while (j >= 0 && messagesReceived[j].time > item.time) {
+        while (j < messagesReceived.length && messagesReceived[j].time > item.time) {
             responses++;
-            j--;
+            j++;
         }
         return {
             to: item.toPhoneNumber,
             time: item.time,
+            message: item.message,
             responses: responses
         }
     });
@@ -72,6 +73,7 @@ const DashboardPanel = () => {
     const columns = React.useMemo(() => [
         { Header: 'To', accessor: 'to', },
         { Header: 'Time', accessor: 'time', },
+        { Header: 'Message', accessor: 'message', },
         { Header: 'Responses', accessor: 'responses', }],[]);
     const data = React.useMemo(() => curateMessageData(messagesSent,messagesReceived),
         [messagesSent,messagesReceived]);

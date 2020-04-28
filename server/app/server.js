@@ -40,7 +40,7 @@ app.locals.jobSystem = new RecurringJobSystem(client);
 
 app.post('/sms-response', function(req, res, next) {
     const originalMessage = Message.find({ toPhoneNumber: req.body.From })
-        .sort('-date').exec(function(err,docs) {
+        .sort('-time').exec(function(err,docs) {
             if (err) { console.error(err); } 
             else if (docs.length == 0) { console.error(`No messages sent to ${req.body.From}`); }
             else { 
@@ -50,7 +50,8 @@ app.post('/sms-response', function(req, res, next) {
                     message: req.body.Body
                 });
                 response.save()
-                    .then(()=> { console.log(`Saved ${response._id}.`); })
+                    .then(()=> { 
+                        console.log(`Saved ${response.message} as response to ${docs[0].message}.`); })
                     .catch((err)=>{ console.error(err); });
             }
         });
@@ -101,7 +102,7 @@ function sanitizeMessage(message) {
 
 // TODO: Add query parameter here to look for a specific to number
 app.get('/messages-sent', function(req, res, next) {
-    Message.find({}, function(err, result) {
+    Message.find({}).sort('-time').exec(function(err, result) {
         if(err) {
             return res.send(err);
         } else {
@@ -112,19 +113,15 @@ app.get('/messages-sent', function(req, res, next) {
 });
 
 // TODO: Add query parameter here to look for a specific (from?) number
+// TODO: Create a 'sanitizeMessage' for the responses
 app.get('/messages-received', function(req, res, next) {
-    // TODO: This is an example message so I can work on the frontend while waiting for #19 to merge
-    return res.json(
-        [
-            {
-                'responseTo': 'reference-id',
-                'fromPhoneNumber': process.env.TWILIO_SMS_NUMBER,
-                'message': 'this is a dummy message',
-                'timeZone': 'this is a dummy timeZone',
-                'time': moment()
-            }
-        ]
-    )
+    MessageResponse.find({}).sort('-time').exec(function(err,result) {
+        if (err) {
+            return res.send(err);
+        } else {
+            return res.json(result);
+        }
+    });
 });
 
 app.post('/recurring-create', function(req, res, next) {
