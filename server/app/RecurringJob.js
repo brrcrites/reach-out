@@ -126,8 +126,8 @@ class RecurringJobSystem {
         if (modelRules.second !== null) { rule.second = modelRules.second }
         // Everything defaults to null except second, so we don't need
         // to check here before setting
-        rule.minute = (modelRules.minute) ? modelRules.minute : null;
-        rule.hour = (modelRules.hour) ? modelRules.hour : null;
+        rule.minute = modelRules.minute;
+        rule.hour = modelRules.hour;
         // The cron doesn't take an empty array and it must be replaced with a null
         rule.dayOfWeek = (modelRules.dayOfWeek && modelRules.dayOfWeek.length > 0) ? modelRules.dayOfWeek : null;
         console.log(`Rule: ${JSON.stringify(rule)}`);
