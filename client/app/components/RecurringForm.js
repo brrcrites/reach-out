@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import RecurringHistoryListItem from './RecurringHistoryListItem.js';
+import RecurringHistoryList from './RecurringHistoryList.js';
+import styled from 'styled-components';
+
+const Padding = styled.div`
+    padding: 10px;
+`;
+
+const Flex = styled.div`
+    display: flex;
+    padding: 10px;
+`;
 
 // Axios configuration for backend server is defined here
 import client from '../client.js';
@@ -91,7 +101,10 @@ const RecurringForm = () => {
     async function loadData() {
         try {
             setLoading(true);
-            const response = await client.get('/recurring-list?all=true');
+            // TODO: This has been set to only return enabled jobs (which might be fine) and only return those
+            // that are currently loaded into the recurring job system cache. Follow this to the server and into
+            // the recurring job system to find the monkey patch
+            const response = await client.get('/recurring-list?all=false');
             console.log(response);
             setHistory(response.data);
         } catch (e) {
@@ -107,10 +120,10 @@ const RecurringForm = () => {
 
     if (loading) { return (<h1>LOADING</h1>); }
     return (
-        <div>
+        <Padding>
             <h1>Recurring Page</h1>
             <h2>Create New Recurring Message Job</h2>
-            <p>Note: this is currently only setup to console.log on the server</p>
+            <p>Note: Using the debug option will print a console.log on the server when the cron triggers for testing purposes. The SMS option will send an actual text message</p>
             <form onSubmit={ 
                 (event) => { 
                     event.preventDefault(); 
@@ -162,81 +175,78 @@ const RecurringForm = () => {
                         onChange={ (e) => { if(minuteRE.test(e.target.value)) { setMinute(e.target.value); }}}
                     />
                 </label>
-                <br />
-                <label>
-                    Monday:
-                    <input
-                        name="monday"
-                        type="checkbox"
-                        checked={mondaySelected}
-                        onChange={ (e) => { setMondaySelected(!mondaySelected) }}
-                    />
-                </label>
-                <br />
-                <label>
-                    Tuesday:
-                    <input
-                        name="tuesday"
-                        type="checkbox"
-                        checked={tuesdaySelected}
-                        onChange={ (e) => { setTuesdaySelected(!tuesdaySelected) }}
-                    />
-                </label>
-                <br />
-                <label>
-                    Wednesday:
-                    <input
-                        name="wednesday"
-                        type="checkbox"
-                        checked={wednesdaySelected}
-                        onChange={ (e) => { setWednesdaySelected(!wednesdaySelected) }}
-                    />
-                </label>
-                <br />
-                <label>
-                    Thursday:
-                    <input
-                        name="thursday"
-                        type="checkbox"
-                        checked={thursdaySelected}
-                        onChange={ (e) => { setThursdaySelected(!thursdaySelected) }}
-                    />
-                </label>
-                <br />
-                <label>
-                    Friday:
-                    <input
-                        name="friday"
-                        type="checkbox"
-                        checked={fridaySelected}
-                        onChange={ (e) => { setFridaySelected(!fridaySelected) }}
-                    />
-                </label>
-                <br />
-                <label>
-                    Saturday:
-                    <input
-                        name="saturday"
-                        type="checkbox"
-                        checked={saturdaySelected}
-                        onChange={ (e) => { setSaturdaySelected(!saturdaySelected) }}
-                    />
-                </label>
-                <br />
-                <label>
-                    Sunday:
-                    <input
-                        name="sunday"
-                        type="checkbox"
-                        checked={sundaySelected}
-                        onChange={ (e) => { setSundaySelected(!sundaySelected) }}
-                    />
-                </label>
-                <br />
+                <Flex>
+                    <label>
+                        Monday:
+                        <input
+                            name="monday"
+                            type="checkbox"
+                            checked={mondaySelected}
+                            onChange={ (e) => { setMondaySelected(!mondaySelected) }}
+                        />
+                    </label>
+                    <label>
+                        Tuesday:
+                        <input
+                            name="tuesday"
+                            type="checkbox"
+                            checked={tuesdaySelected}
+                            onChange={ (e) => { setTuesdaySelected(!tuesdaySelected) }}
+                        />
+                    </label>
+                    <label>
+                        Wednesday:
+                        <input
+                            name="wednesday"
+                            type="checkbox"
+                            checked={wednesdaySelected}
+                            onChange={ (e) => { setWednesdaySelected(!wednesdaySelected) }}
+                        />
+                    </label>
+                    <label>
+                        Thursday:
+                        <input
+                            name="thursday"
+                            type="checkbox"
+                            checked={thursdaySelected}
+                            onChange={ (e) => { setThursdaySelected(!thursdaySelected) }}
+                        />
+                    </label>
+                    <label>
+                        Friday:
+                        <input
+                            name="friday"
+                            type="checkbox"
+                            checked={fridaySelected}
+                            onChange={ (e) => { setFridaySelected(!fridaySelected) }}
+                        />
+                    </label>
+                    <label>
+                        Saturday:
+                        <input
+                            name="saturday"
+                            type="checkbox"
+                            checked={saturdaySelected}
+                            onChange={ (e) => { setSaturdaySelected(!saturdaySelected) }}
+                        />
+                    </label>
+                    <label>
+                        Sunday:
+                        <input
+                            name="sunday"
+                            type="checkbox"
+                            checked={sundaySelected}
+                            onChange={ (e) => { setSundaySelected(!sundaySelected) }}
+                        />
+                    </label>
+                </Flex>
                 <select id="type" name="type" value={type} onChange={ (e) => { setType(e.target.value) }}>
                     <option value="debug">Debug</option>
                     <option value="sms">SMS</option>
-                    <option value="voice">Voice</option>
+                    { 
+                        // TODO: Not yet implemented so commented out for twilio hackathon
+                        /* <option value="voice">Voice</option> */ 
+                    }
                 </select>
                 <br />
                 <input type="submit" value="Submit" />
@@ -245,12 +255,9 @@ const RecurringForm = () => {
                 { response }
             </div>
             <div>
-                <h2>Recurring Job Log</h2>
-                <ul>
-                    { history.map( (job) => <RecurringHistoryListItem data={job} /> ) }
-                </ul>
+                { <RecurringHistoryList data={history} /> } 
             </div>
-        </div>
+        </Padding>
     );
 }
 

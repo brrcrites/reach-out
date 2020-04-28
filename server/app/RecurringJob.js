@@ -25,12 +25,17 @@ class RecurringJobSystem {
         // Jobs that are past their end point are not active, even if they haven't been specifically disabled
         // TODO: We need to test this query syntax, and it currently only checks enabled since recurring.end is
         // an optional field and idk how to say 'if it isn't present or is $gt now'
+        const filterValues = this.getRunning();
         ScheduledMessage.find({ 'enabled': true }, function(err, result) {
             if(err) {
                 console.error(error);
                 callback(error, []);
             } else {
-                callback(null, result);
+                // TODO: This is a monkey patch so that the Enabled will only return currently cached jobs to the
+                // front end. This should be removed once we have the recurring job system internal data model corrected
+                // so that the mongo db and server are always in agreement with what is/should be running
+                const filteredResults = result.filter((record) => { return filterValues.includes(record.scheduled_uuid) } )
+                callback(null, filteredResults);
             }
         });
     }

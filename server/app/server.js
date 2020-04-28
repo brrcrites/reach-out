@@ -168,6 +168,8 @@ app.get('/recurring-list', function(req, res, next) {
     if (req.query?.all === 'true') {
         return app.locals.jobSystem.getAll(resCallback);
     } else {
+        // TODO: Follow this down to a monkey patch to filter out when the recurring job systems cache
+        // and the mongo don't match
         return app.locals.jobSystem.getEnabled(resCallback);
     }
 });
