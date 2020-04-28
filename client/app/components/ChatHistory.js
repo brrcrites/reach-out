@@ -96,7 +96,7 @@ function sortAndZipperChatHistory(received, sent) {
         generatedReturn = generatedReturn.concat({ 'type': 'received', 'obj': receivedSorted[0] });
         receivedSorted.shift();
     }
-    while (sentSorted.lenght) {
+    while (sentSorted.length > 0) {
         generatedReturn = generatedReturn.concat({ 'type': 'sent', 'obj': sentSorted[0] });
         sentSorted.shift();
     }
