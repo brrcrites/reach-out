@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
+import Banner from '../images/banner-1.jpg'
 
 // Axios configuration for backend server is defined here
 import client from '../client.js';
+
+const BannerStyle = styled.div`
+    overflow: hidden;
+    width: 100%;
+    height: 600px;
+`;
 
 function sendSms(toNumber, message, setResponse) {
     console.log(`to number: ${toNumber}`);
@@ -28,13 +36,18 @@ function sendSms(toNumber, message, setResponse) {
    });
 }
 
-const InputForm = () => {
+const HomePage = () => {
     const [toNumber, setToNumber] = useState('+1');
     const [message, setMessage] = useState('This is a default test message');
     const [response, setResponse] = useState('No Message');
+    const banner = new Image();
+    banner.src = Banner;
 
     return (
         <div>
+            <BannerStyle>
+                <img src={Banner} />
+            </BannerStyle>
             <h1>Home (Test) Page</h1>
             <h2>Send Single Text Message</h2>
             <form onSubmit={ (event) => { event.preventDefault(); sendSms(toNumber, message, setResponse); } }>
@@ -65,4 +78,4 @@ const InputForm = () => {
     );
 }
 
-export default InputForm;
+export default HomePage;
