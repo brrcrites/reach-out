@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 
-import HomePage from './components/InputForm.js';
+import HomePage from './components/HomePage.js';
 import RecurringForm from './components/RecurringForm.js';
 import DashboardPanel from './components/DashboardPanel.js';
 import ChatHistory from './components/ChatHistory.js';
