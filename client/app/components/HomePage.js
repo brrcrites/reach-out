@@ -48,32 +48,7 @@ const HomePage = () => {
             <BannerStyle>
                 <img src={Banner} />
             </BannerStyle>
-            <h1>Home (Test) Page</h1>
-            <h2>Send Single Text Message</h2>
-            <form onSubmit={ (event) => { event.preventDefault(); sendSms(toNumber, message, setResponse); } }>
-                <label>
-                    Send Message To:
-                    <input 
-                        type="text" 
-                        value={toNumber} 
-                        onChange={ e => setToNumber(e.target.value) }
-                    />
-                </label>
-                <br />
-                <label>
-                    Message:
-                    <input
-                        type="text"
-                        value={message}
-                        onChange={ e => setMessage(e.target.value) } 
-                    />
-                </label>
-                <br />
-                <input type="submit" value="Submit" />
-            </form>
-            <div>
-                { response }
-            </div>
+            <h1>Welcome to REACH OUT!</h1>
         </div>
     );
 }
