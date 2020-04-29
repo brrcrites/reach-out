@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 
-import InputForm from './components/InputForm.js';
+import HomePage from './components/HomePage.js';
 import RecurringForm from './components/RecurringForm.js';
 import DashboardPanel from './components/DashboardPanel.js';
 import ChatHistory from './components/ChatHistory.js';
@@ -16,7 +16,7 @@ class App extends Component {
             <div>
                 <NavBar />
                 <Switch>
-                    <Route path='/' component={InputForm} exact />
+                    <Route path='/' component={HomePage} exact />
                     <Route path='/recurring' component={RecurringForm} />
                     <Route path='/dashboard' component={DashboardPanel} />
                     <Route path='/chat' component={ChatHistory} />
