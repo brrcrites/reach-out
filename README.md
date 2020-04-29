@@ -51,3 +51,7 @@ Add these values to a `server/.env` file. See `.env.example` for the values need
 
 * Currently the pages do not reload when you submit a form. In order to reload the data that is presented on a page you will need to navigate away from the page and back to it (clicking the navbar for the page you are already on will not reload the page)
 * This system has not been reviewed for any type of compliance (HIPPA, FERPA, etc.) and should not be used for conversations protected by any government regulations
+
+# Notes for Developers
+
+* There is no hot-reloading when developing with docker containers. Exit the container, run `docker-compose down` then start-up the container again once changes have been made. Can run `docker-compose -f <dockercomposefile> up --build && docker-compose -f <dockercomposefile> down` to bring down the containers once they've been exited with ctrl-C.
