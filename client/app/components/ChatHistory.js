@@ -76,7 +76,7 @@ function compareByTimestamp(a, b) {
     return 0;
 }
 
-function sortAndZipperChatHistory(received, sent) {
+function sortAndZipperChatHistory(received, sent, filterNumber) {
     // Sort is in-place so we need to make a copy before modifying it
     let receivedSorted = (received) ? [...received].sort(compareByTimestamp) : [];
     let sentSorted = (sent) ? [...sent].sort(compareByTimestamp) : [];
@@ -104,9 +104,30 @@ function sortAndZipperChatHistory(received, sent) {
     return generatedReturn;
 }
 
+function loadPossibleNumbers(sent, received, callback) {
+    let numbersArray = [];
+
+    // TODO: We could probably concat the two arrays together and then run this over both at the same time
+    sent.forEach( (value) => { 
+        if (!numbersArray.includes(value.toPhoneNumber)) {
+            numbersArray = numbersArray.concat(value.toPhoneNumber);
+        }
+    });
+
+    received.forEach( (value) => { 
+        if (!numbersArray.includes(value.toPhoneNumber)) {
+            numbersArray = numbersArray.concat(value.toPhoneNumber);
+        }
+    });
+
+    callback(numbersArray);
+}
+
 const ChatHistory = () => {
     const [messagesSent, setMessagesSent] = useState([]);
     const [messagesReceived, setMessagesReceived] = useState([]);
+    const [possibleNumbers, setPossibleNumbers] = useState([]);
+    const [filterNumber, setFilterNumber] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -138,40 +159,35 @@ const ChatHistory = () => {
         loadData();
     }, []);
 
+    // Each time the messages sent or received are updated they will cause a subsequent trigger to set all the possible numbers (set of unique external numbers)
+    useEffect(() => {
+        loadPossibleNumbers(messagesSent, messagesReceived, setPossibleNumbers);
+        (possibleNumbers.length > 0 && filterNumber === '') ? setFilterNumber(possibleNumbers[0]) : '';
+    }, [messagesSent, messagesReceived]);
+
     if (loading) { return (<h1>LOADING</h1>)}
     return(
         <div>
             <h1>Chat History</h1>
+                Show Messages To ...
+                <select id="type" name="type" value={filterNumber} onChange={ (e) => { setFilterNumber(e.target.value) }}>
+                    { 
+                        possibleNumbers && possibleNumbers.map( (item) => {
+                            return <option value={item}>{item}</option>
+                        })
+                    }
+                </select>
                 <Chat>
                 {
                     (messagesSent || messagesReceived) && sortAndZipperChatHistory(messagesReceived, messagesSent).map( (item, index) => {
-                        if (item.type == 'received') {
+                        if (item.type == 'received' && item.obj.fromPhoneNumber === filterNumber) {
                             return <ReceivedMessage key={index}>RECEIVED: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</ReceivedMessage>
-                        } else {
+                        } else if (item.obj.toPhoneNumber === filterNumber) {
                             return <SentMessage key={index}>SENT: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</SentMessage>
                         }
                     })
                 }
                 </Chat>
-            <h2>Sent Message History (Debug):</h2>
-                <ul>
-                {
-                    // Check that there is some history, and then unpack each item in the history as a list item
-                    messagesSent && messagesSent.map( (item, index) => {
-                        return <li key={index}>SENT: {item.time} -- [from: {item.fromPhoneNumber}, to: {item.toPhoneNumber}] -- {item.message}</li>
-                    })
-                }
-                </ul>
-            <br />
-            <h2>Received Message History (Debug):</h2>
-                <ul>
-                {
-                    messagesReceived && messagesReceived.map( (item, index) => {
-                        return <li key={index}>RECEIVED: {item.time} -- [from: {item.fromPhoneNumber}] -- {item.message}</li>
-                    })
-                }
-                </ul>
-            <br />
         </div>
     )
 }
