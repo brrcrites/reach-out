@@ -11,44 +11,21 @@ const BannerStyle = styled.div`
     height: 600px;
 `;
 
-function sendSms(toNumber, message, setResponse) {
-    console.log(`to number: ${toNumber}`);
-    console.log(`message: ${message}`)
-
-    // Create payload for POST
-    var data = JSON.stringify({
-        toNumber: toNumber,
-        message: message,
-    })
-   console.log(`payload data: ${data}`)
-
-   // Post the request to have the sms sent
-   client.post('/send-sms', data, { headers: { 'Content-Type': 'application/json' } })
-   // Handle success case
-   .then( (response) => {
-       console.log(response);
-       setResponse(response.data);
-   })
-   // Handle failure case
-   .catch( (response) => {
-       console.error(response);
-       setResponse(response.data);
-   });
-}
-
 const HomePage = () => {
-    const [toNumber, setToNumber] = useState('+1');
-    const [message, setMessage] = useState('This is a default test message');
-    const [response, setResponse] = useState('No Message');
-    const banner = new Image();
-    banner.src = Banner;
-
     return (
         <div>
             <BannerStyle>
                 <img src={Banner} />
             </BannerStyle>
             <h1>Welcome to REACH OUT!</h1>
+            <p><b>R</b>emote <b>E</b>lderly <b>A</b>ssessment of <b>C</b>are and <b>H</b>ealth (REACH) Out is a system for automating checkins and reminders for the elderly.
+                The system is made up of three primary parts. The recurring job system under the "Recurring Job" tab is where you create
+                new recurring SMS messages such as reminders to take medications or continual checkins (voice coming soon). You'll find a
+                list of the messages sent and how many responses were sent back from that message under the "Dashboard" tab. This lets you
+                know at a glance if the person in your care is responsive to your messages or if there may be a problem (rules based alerting
+                coming soon). Finally under the "Chat History" tab you will see a log of messages sent and recevied between the system
+                and the person under care so you can see the context of their responses.
+            </p>
         </div>
     );
 }
