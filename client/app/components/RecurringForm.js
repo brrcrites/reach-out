@@ -87,7 +87,7 @@ const RecurringForm = () => {
     const [fridaySelected, setFridaySelected] = useState(false);
     const [saturdaySelected, setSaturdaySelected] = useState(false);
     const [sundaySelected, setSundaySelected] = useState(false);
-    const [type, setType] = useState('debug')
+    const [type, setType] = useState('sms')
     const [response, setResponse] = useState('No Message');
     const [history, setHistory] = useState([]);
 
@@ -252,10 +252,8 @@ const RecurringForm = () => {
                 <input type="submit" value="Submit" />
             </form>
             <div>
-                { response }
-            </div>
-            <div>
-                { <RecurringHistoryList data={history} /> } 
+                <h2>Recurring Jobs</h2>
+                { (history.length > 0) ? <RecurringHistoryList data={history} /> : 'No Recurring Jobs Created' } 
             </div>
         </Padding>
     );

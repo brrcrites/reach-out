@@ -5,10 +5,6 @@ import { useTable, useRowSelect } from 'react-table';
 // Axios configuration for backend server is defined here
 import client from '../client.js';
 
-// Source: https://codepen.io/samuelkraft/pen/Farhl
-// Source: https://leaverou.github.io/bubbly/
-// Source: https://codepen.io/swards/pen/gxQmbj
-
 const Styles = styled.div`
     padding: 1rem;
     
@@ -34,17 +30,7 @@ const Styles = styled.div`
             }
         }
     }
-`
-
-function compareByTimestamp(a, b) {
-    if (a.time < b.time) {
-        return -1;
-    }
-    if (a.time > b.time) {
-        return 1;
-    }
-    return 0;
-}
+`;
 
 function curateMessageData(messagesSent,messagesReceived) {
     let j = 0;
@@ -67,7 +53,6 @@ function curateMessageData(messagesSent,messagesReceived) {
 const DashboardPanel = () => {
     const [messagesSent, setMessagesSent] = useState([]);
     const [messagesReceived, setMessagesReceived] = useState([]);
-    const [messageData, setMessageData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const columns = React.useMemo(() => [
@@ -107,16 +92,11 @@ const DashboardPanel = () => {
         }
     }
 
-    // The useEffect hook will re-execute (and I believe re-render the component)
-    // whenever one of the values in the second parameter changes. Since the second
-    // parameter is an empty array, it will be run exactly once when the component
-    // loads
     useEffect(() => {
         loadData();
     }, []);
 
     if (loading) { return (<h1>LOADING</h1>)}
-
     return (
         <div>
         <h1>Dashboard</h1>

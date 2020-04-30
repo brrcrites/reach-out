@@ -181,9 +181,9 @@ const ChatHistory = () => {
                 {
                     (messagesSent || messagesReceived) && sortAndZipperChatHistory(messagesReceived, messagesSent).map( (item, index) => {
                         if (item.type == 'received' && item.obj.fromPhoneNumber === filterNumber) {
-                            return <ReceivedMessage key={index}>RECEIVED: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</ReceivedMessage>
+                            return <ReceivedMessage key={index}>{item.obj.message}<br/>Received at: {item.obj.time}</ReceivedMessage>
                         } else if (item.obj.toPhoneNumber === filterNumber) {
-                            return <SentMessage key={index}>SENT: {item.obj.time} -- [from: {item.obj.fromPhoneNumber}] -- {item.obj.message}</SentMessage>
+                            return <SentMessage key={index}>{item.obj.message}<br/>Sent at: {item.obj.time}</SentMessage>
                         }
                     })
                 }
