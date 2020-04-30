@@ -79,7 +79,6 @@ const RecurringHistoryList = ({data}) => {
 
     return (
         <div>
-        <h2>Recurring Jobs</h2>
         <Styles>
         <table {...getTableProps()}> 
             <thead>
