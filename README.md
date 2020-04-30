@@ -49,8 +49,10 @@ Add these values to a `server/.env` file. See `.env.example` for the values need
 
 # Notes for Users
 
-* Currently the pages do not reload when you submit a form. In order to reload the data that is presented on a page you will need to navigate away from the page and back to it (clicking the navbar for the page you are already on will not reload the page)
+* Currently the pages do not reload when you submit a form and cannot be reloaded by refreshing the page. In order to reload the data that is presented on a page you will need to navigate away from the page and back to it (clicking the navbar for the page you are already on will not reload the page)
 * This system has not been reviewed for any type of compliance (HIPPA, FERPA, etc.) and should not be used for conversations protected by any government regulations
+* All times for recurring jobs can be entered in the local timezone, but must be entered in military time (So 10:07 PM would be 22:07)
+* The times entered are presently being converted to UTC so they are sent at the correct time accounting for timezone, however this can cause issues (especially when testing) as the 7 hour offset may mean it misses firing the event for the day it is logged
 
 # Notes for Developers
 
