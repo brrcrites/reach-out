@@ -57,3 +57,6 @@ Add these values to a `server/.env` file. See `.env.example` for the values need
 * There is no hot-reloading when developing with docker containers. Exit the container, run `docker-compose down` then start-up the container again once changes have been made. Can run `docker-compose -f <dockercomposefile> up --build && docker-compose -f <dockercomposefile> down` to bring down the containers once they've been exited with ctrl-C.
 * The recurring jobs to not reload from the DB. Once you bring down the development server those jobs will still be in the DB but won't reload into the cron job when you bring up a new container. 
 
+# Authors
+
+This project was created by [Brian Crites](https://github.com/brrcrites) and [Jeffrey McDaniel](https://github.com/jmcda001) with special thanks to [Andrew Lvovsky](https://github.com/borninla) for his testing support.
