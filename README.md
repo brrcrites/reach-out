@@ -1,4 +1,7 @@
-# REACH OUT
+# REACH Out
+
+[![Build Status](https://travis-ci.com/brrcrites/twilio-dev-hack.svg?branch=master)](https://travis-ci.com/brrcrites/twilio-dev-hack)
+
 **R**emote **E**lder **A**ssessment of **C**are and **H**ealth 
 
 ## Description
@@ -8,14 +11,11 @@ Are you worried about your parents or grandparents keeping up with their medicat
 ## Stack
 
 - **M**ongoDB
-- **E**xpress
+- **E**xpressJS
 - **R**eact
 - **N**odeJS
 - Twilio API
-
-## Development
-
-Slack channel for communication, GitHub Projects Kanban board, docker-compose and Docker containers for development and Jest for testing with TravisCI for continuous integration. 
+- Docker & docker-compose
 
 ## Setup
 
@@ -67,6 +67,7 @@ myapp_client     | ℹ ｢wdm｣: Compiled successfully.
 
 * There is no hot-reloading when developing with docker containers. Exit the container, run `docker-compose down` then start-up the container again once changes have been made. Can run `docker-compose -f <dockercomposefile> up --build && docker-compose -f <dockercomposefile> down` to bring down the containers once they've been exited with ctrl-C.
 * The recurring jobs to not reload from the DB. Once you bring down the development server those jobs will still be in the DB but won't reload into the cron job when you bring up a new container. 
+* There are curently only tests to make sure that the docker containers build without any failures (run by Travis CI) and for the server. The server tests can be run with `npm run test` in the `/server` directory
 
 # Authors
 
