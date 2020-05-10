@@ -1,6 +1,6 @@
 # REACH Out
 
-[![Build Status](https://travis-ci.com/brrcrites/twilio-dev-hack.svg?branch=master)](https://travis-ci.com/brrcrites/twilio-dev-hack)
+[![Build Status](https://travis-ci.com/brrcrites/reach-out.svg?branch=master)](https://travis-ci.com/brrcrites/reach-out)
 
 **R**emote **E**lder **A**ssessment of **C**are and **H**ealth 
 
